@@ -69,14 +69,20 @@ impl<'a> From<Lexer<'a>> for Vec<Token> {
 	}
 }
 
+struct State {
+	counter: u32,
+}
+
 struct Formatter {
 	token_stream: Peekable<IntoIter<Token>>,
+	state: State,
 }
 
 impl<'a> From<Lexer<'a>> for Formatter {
 	fn from(lexer: Lexer<'a>) -> Self {
 		Self {
 			token_stream: Vec::from(lexer).into_iter().peekable(),
+			state: State { counter: 0 },
 		}
 	}
 }
