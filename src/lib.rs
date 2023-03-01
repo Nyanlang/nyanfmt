@@ -1,7 +1,7 @@
 use std::{iter::Peekable, str::Chars, vec::IntoIter};
 
 #[derive(Debug, PartialEq)]
-pub enum Token {
+enum Token {
 	Right,
 	Left,
 	Inc,
@@ -41,6 +41,12 @@ impl<'a> Lexer<'a> {
 	}
 }
 
+impl<'a> From<Chars<'a>> for Lexer<'a> {
+	fn from(chars: Chars<'a>) -> Self {
+		Self::new(chars)
+	}
+}
+
 impl<'a> From<Lexer<'a>> for Vec<Token> {
 	fn from(mut lexer: Lexer<'a>) -> Self {
 		let mut v: Vec<Token> = vec![];
@@ -69,21 +75,30 @@ impl<'a> From<Lexer<'a>> for Vec<Token> {
 	}
 }
 
+#[derive(Default)]
 struct State {
 	counter: u32,
 }
 
+type TokenStream = Peekable<IntoIter<Token>>;
+
 struct Formatter {
-	token_stream: Peekable<IntoIter<Token>>,
+	token_stream: TokenStream,
 	state: State,
+}
+
+impl Formatter {
+	fn new(token_stream: TokenStream) -> Self {
+		Self {
+			token_stream,
+			state: State::default(),
+		}
+	}
 }
 
 impl<'a> From<Lexer<'a>> for Formatter {
 	fn from(lexer: Lexer<'a>) -> Self {
-		Self {
-			token_stream: Vec::from(lexer).into_iter().peekable(),
-			state: State { counter: 0 },
-		}
+		Self::new(Vec::from(lexer).into_iter().peekable())
 	}
 }
 
@@ -131,7 +146,7 @@ mod tests {
 		use Token::*;
 
 		let code = "냥냥냥냥냥  냥냥냥~? 냥냥냥냥~? 냥냥?    냥냥냥? 냥냥냥?냥!!  !!  냐-? 냥?냥?  냐??냥~!-!   냐-??.? 냐  냐냐. ";
-		let lexer = Lexer::new(code.chars());
+		let lexer: Lexer = code.chars().into();
 		let token_stream: Vec<Token> = lexer.into();
 
 		assert_eq!(
@@ -153,10 +168,12 @@ mod tests {
 		use Token::*;
 
 		let code = "냥~?냥냥??냥냥-???-!-??.?냐.";
-		let rep = Formatter::from(Lexer::new(code.chars()));
+		let lexer: Lexer = code.chars().into();
+		let formatter: Formatter = lexer.into();
+		let formatted_token_stream: Vec<Token> = formatter.into();
 
 		assert_eq!(
-			Vec::from(rep),
+			formatted_token_stream,
 			[
 				Inc, JumpRight, Right, Span, Inc, Inc, Right, Right, Span, Inc,
 				Inc, JumpLeft, Right, Right, Right, Span, JumpLeft, Left, Span,
