@@ -1,6 +1,6 @@
 use std::{iter::Peekable, str::Chars, vec::IntoIter};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 enum Token {
 	Right,
 	Left,
@@ -108,8 +108,13 @@ impl From<Formatter> for Vec<Token> {
 
 		let mut v = vec![];
 
-		while let Some(token) = formatter.token_stream.next() {
-			let Some(next) = formatter.token_stream.peek() else {
+		let mut ts = formatter
+			.token_stream
+			.filter(|&tok| tok != Span)
+			.peekable();
+
+		while let Some(token) = ts.next() {
+			let Some(next) = ts.peek() else {
                 v.push(token);
                 break;
             };
@@ -127,8 +132,19 @@ impl From<Formatter> for Vec<Token> {
 						v.push(Span);
 					}
 				},
+				Inc | Dec => {
+					v.push(token);
+					if matches!(next, Inc | Dec) {
+						formatter.state.counter += 1;
+						if formatter.state.counter == 5 {
+							v.push(Span);
+							formatter.state.counter = 0;
+						}
+					} else {
+						formatter.state.counter = 0;
+					}
+				},
 				Span => (),
-				_ => v.push(token),
 			}
 		}
 
@@ -167,7 +183,7 @@ mod tests {
 	fn format() {
 		use Token::*;
 
-		let code = "냥~?냥냥??냥냥-???-!-??.?냐.";
+		let code = " 냥 ~?냥 냥? ?냥냥냥 냥냥냥 -? ??- !- ?? .? 냐.";
 		let lexer: Lexer = code.chars().into();
 		let formatter: Formatter = lexer.into();
 		let formatted_token_stream: Vec<Token> = formatter.into();
@@ -176,8 +192,9 @@ mod tests {
 			formatted_token_stream,
 			[
 				Inc, JumpRight, Right, Span, Inc, Inc, Right, Right, Span, Inc,
-				Inc, JumpLeft, Right, Right, Right, Span, JumpLeft, Left, Span,
-				JumpLeft, Right, Right, Span, Out, Right, Span, Dec, Out,
+				Inc, Inc, Inc, Inc, Span, Inc, JumpLeft, Right, Right, Right,
+				Span, JumpLeft, Left, Span, JumpLeft, Right, Right, Span, Out,
+				Right, Span, Dec, Out,
 			],
 		)
 	}
