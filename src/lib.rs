@@ -1,4 +1,7 @@
-use std::str::Chars;
+use std::{
+	iter::{Flatten, Peekable},
+	str::Chars,
+};
 
 #[derive(Debug, PartialEq)]
 pub enum Token {
@@ -10,6 +13,12 @@ pub enum Token {
 	In,
 	JumpRight,
 	JumpLeft,
+}
+
+#[derive(Debug, PartialEq)]
+enum OutToken {
+	Token(Token),
+	WS,
 }
 
 #[derive(Debug)]
@@ -50,6 +59,47 @@ impl<'a> Iterator for Lexer<'a> {
 	}
 }
 
+struct Formatter<'a> {
+	token_stream: Peekable<Flatten<Lexer<'a>>>,
+}
+
+impl<'a> From<Lexer<'a>> for Formatter<'a> {
+	fn from(lexer: Lexer<'a>) -> Self {
+		Self {
+			token_stream: lexer.flatten().peekable(),
+		}
+	}
+}
+
+impl<'a> Iterator for Formatter<'a> {
+	type Item = Vec<OutToken>;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		use Token::*;
+
+		let Some(current) = self.token_stream.next() else {
+            return None;
+        };
+		let Some(next) = self.token_stream.peek() else {
+            return Some(vec![OutToken::Token(current)]);
+        };
+
+		if match (&current, next) {
+			(Right | Left, Right | Left) => false,
+			(Right | Left, _)
+			| (Out | In | JumpRight | JumpLeft, Inc | Dec) => true,
+			_ => false,
+		} {
+			Some(vec![
+				OutToken::Token(current),
+				OutToken::WS,
+			])
+		} else {
+			Some(vec![OutToken::Token(current)])
+		}
+	}
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -71,6 +121,48 @@ mod tests {
 				Dec, JumpLeft, Right, Inc, Right, Inc, Right, Dec, Right,
 				Right, Inc, JumpRight, Left, JumpLeft, Left, Dec, JumpLeft,
 				Right, Right, Out, Right, Dec, Dec, Dec, Out
+			],
+		)
+	}
+
+	#[test]
+	fn format() {
+		use Token::*;
+
+		let code = "냥~?냥냥??냥냥-???-!-??.?냐.";
+		let rep = Formatter::from(Lexer::new(code.chars()));
+
+		assert_eq!(
+			rep.flatten().collect::<Vec<OutToken>>(),
+			[
+				OutToken::Token(Inc),
+				OutToken::Token(JumpRight),
+				OutToken::Token(Right),
+				OutToken::WS,
+				OutToken::Token(Inc),
+				OutToken::Token(Inc),
+				OutToken::Token(Right),
+				OutToken::Token(Right),
+				OutToken::WS,
+				OutToken::Token(Inc),
+				OutToken::Token(Inc),
+				OutToken::Token(JumpLeft),
+				OutToken::Token(Right),
+				OutToken::Token(Right),
+				OutToken::Token(Right),
+				OutToken::WS,
+				OutToken::Token(JumpLeft),
+				OutToken::Token(Left),
+				OutToken::WS,
+				OutToken::Token(JumpLeft),
+				OutToken::Token(Right),
+				OutToken::Token(Right),
+				OutToken::WS,
+				OutToken::Token(Out),
+				OutToken::Token(Right),
+				OutToken::WS,
+				OutToken::Token(Dec),
+				OutToken::Token(Out),
 			],
 		)
 	}
