@@ -1,5 +1,6 @@
 use std::str::Chars;
 
+#[derive(Debug, PartialEq)]
 pub enum Token {
 	Right,
 	Left,
@@ -11,6 +12,7 @@ pub enum Token {
 	JumpLeft,
 }
 
+#[derive(Debug)]
 struct Lexer<'a> {
 	code: Chars<'a>,
 }
@@ -41,5 +43,31 @@ impl<'a> Iterator for Lexer<'a> {
 			.next()
 			.map(Self::tokenize)
 			.map(|v| v.map_or(Vec::new(), |tok| vec![tok]))
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use pretty_assertions::assert_eq;
+
+	#[test]
+	fn lex() {
+		use Token::*;
+
+		let code = "냥냥냥냥냥 냥냥냥~? 냥냥냥냥~? 냥냥? 냥냥냥? 냥냥냥? 냥!!!! 냐-? 냥? 냥? 냐?? 냥~! -! 냐-?? .? 냐냐냐. ".chars();
+		let lexer = Lexer { code };
+
+		assert_eq!(
+			lexer.flatten().collect::<Vec<Token>>(),
+			[
+				Inc, Inc, Inc, Inc, Inc, Inc, Inc, Inc, JumpRight, Right, Inc,
+				Inc, Inc, Inc, JumpRight, Right, Inc, Inc, Right, Inc, Inc,
+				Inc, Right, Inc, Inc, Inc, Right, Inc, Left, Left, Left, Left,
+				Dec, JumpLeft, Right, Inc, Right, Inc, Right, Dec, Right,
+				Right, Inc, JumpRight, Left, JumpLeft, Left, Dec, JumpLeft,
+				Right, Right, Out, Right, Dec, Dec, Dec, Out
+			],
+		)
 	}
 }
