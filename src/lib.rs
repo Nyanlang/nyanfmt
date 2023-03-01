@@ -18,6 +18,10 @@ struct Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
+	fn new(code: Chars<'a>) -> Self {
+		Self { code }
+	}
+
 	fn tokenize(ch: char) -> Option<Token> {
 		use Token::*;
 
@@ -55,8 +59,8 @@ mod tests {
 	fn lex() {
 		use Token::*;
 
-		let code = "냥냥냥냥냥 냥냥냥~? 냥냥냥냥~? 냥냥? 냥냥냥? 냥냥냥? 냥!!!! 냐-? 냥? 냥? 냐?? 냥~! -! 냐-?? .? 냐냐냐. ".chars();
-		let lexer = Lexer { code };
+		let code = "냥냥냥냥냥 냥냥냥~? 냥냥냥냥~? 냥냥? 냥냥냥? 냥냥냥? 냥!!!! 냐-? 냥? 냥? 냐?? 냥~! -! 냐-?? .? 냐냐냐. ";
+		let lexer = Lexer::new(code.chars());
 
 		assert_eq!(
 			lexer.flatten().collect::<Vec<Token>>(),
