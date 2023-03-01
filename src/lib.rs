@@ -1,7 +1,4 @@
-use std::{
-	iter::{Flatten, Peekable},
-	str::Chars,
-};
+use std::{iter::Peekable, str::Chars, vec::IntoIter};
 
 #[derive(Debug, PartialEq)]
 pub enum Token {
@@ -44,30 +41,47 @@ impl<'a> Lexer<'a> {
 	}
 }
 
-impl<'a> Iterator for Lexer<'a> {
-	type Item = Vec<Token>;
+impl<'a> From<Lexer<'a>> for Vec<Token> {
+	fn from(mut lexer: Lexer<'a>) -> Self {
+		let mut v: Vec<Token> = vec![];
+		let mut is_span = false;
 
-	fn next(&mut self) -> Option<Self::Item> {
-		self.code
-			.next()
-			.map(Self::tokenize)
-			.map(|v| v.map_or(Vec::new(), |tok| vec![tok]))
+		while let Some(ch) = lexer.code.next() {
+			let Some(token) = Lexer::tokenize(ch) else {
+                continue;
+            };
+
+			is_span = match token {
+				Token::Span => {
+					if !is_span {
+						v.push(Token::Span)
+					}
+					true
+				},
+				_ => {
+					v.push(token);
+					false
+				},
+			};
+		}
+
+		v
 	}
 }
 
-struct Formatter<'a> {
-	token_stream: Peekable<Flatten<Lexer<'a>>>,
+struct Formatter {
+	token_stream: Peekable<IntoIter<Token>>,
 }
 
-impl<'a> From<Lexer<'a>> for Formatter<'a> {
+impl<'a> From<Lexer<'a>> for Formatter {
 	fn from(lexer: Lexer<'a>) -> Self {
 		Self {
-			token_stream: lexer.flatten().peekable(),
+			token_stream: Vec::from(lexer).into_iter().peekable(),
 		}
 	}
 }
 
-impl<'a> Iterator for Formatter<'a> {
+impl<'a> Iterator for Formatter {
 	type Item = Vec<Token>;
 
 	fn next(&mut self) -> Option<Self::Item> {
@@ -104,9 +118,10 @@ mod tests {
 
 		let code = "냥냥냥냥냥 냥냥냥~? 냥냥냥냥~? 냥냥? 냥냥냥? 냥냥냥? 냥!!!! 냐-? 냥? 냥? 냐?? 냥~! -! 냐-?? .? 냐냐냐. ";
 		let lexer = Lexer::new(code.chars());
+		let token_stream: Vec<Token> = lexer.into();
 
 		assert_eq!(
-			lexer.flatten().collect::<Vec<Token>>(),
+			token_stream,
 			[
 				Inc, Inc, Inc, Inc, Inc, Inc, Inc, Inc, JumpRight, Right, Inc,
 				Inc, Inc, Inc, JumpRight, Right, Inc, Inc, Right, Inc, Inc,
