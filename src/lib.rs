@@ -13,12 +13,7 @@ pub enum Token {
 	In,
 	JumpRight,
 	JumpLeft,
-}
-
-#[derive(Debug, PartialEq)]
-enum OutToken {
-	Token(Token),
-	WS,
+	Span,
 }
 
 #[derive(Debug)]
@@ -43,6 +38,7 @@ impl<'a> Lexer<'a> {
 			',' => Some(In),
 			'~' => Some(JumpRight),
 			'-' => Some(JumpLeft),
+			' ' | '\t'..='\r' => Some(Span),
 			_ => None,
 		}
 	}
@@ -72,7 +68,7 @@ impl<'a> From<Lexer<'a>> for Formatter<'a> {
 }
 
 impl<'a> Iterator for Formatter<'a> {
-	type Item = Vec<OutToken>;
+	type Item = Vec<Token>;
 
 	fn next(&mut self) -> Option<Self::Item> {
 		use Token::*;
@@ -81,7 +77,7 @@ impl<'a> Iterator for Formatter<'a> {
             return None;
         };
 		let Some(next) = self.token_stream.peek() else {
-            return Some(vec![OutToken::Token(current)]);
+            return Some(vec![current]);
         };
 
 		if match (&current, next) {
@@ -90,12 +86,9 @@ impl<'a> Iterator for Formatter<'a> {
 			| (Out | In | JumpRight | JumpLeft, Inc | Dec) => true,
 			_ => false,
 		} {
-			Some(vec![
-				OutToken::Token(current),
-				OutToken::WS,
-			])
+			Some(vec![current, Token::Span])
 		} else {
-			Some(vec![OutToken::Token(current)])
+			Some(vec![current])
 		}
 	}
 }
@@ -133,36 +126,11 @@ mod tests {
 		let rep = Formatter::from(Lexer::new(code.chars()));
 
 		assert_eq!(
-			rep.flatten().collect::<Vec<OutToken>>(),
+			rep.flatten().collect::<Vec<Token>>(),
 			[
-				OutToken::Token(Inc),
-				OutToken::Token(JumpRight),
-				OutToken::Token(Right),
-				OutToken::WS,
-				OutToken::Token(Inc),
-				OutToken::Token(Inc),
-				OutToken::Token(Right),
-				OutToken::Token(Right),
-				OutToken::WS,
-				OutToken::Token(Inc),
-				OutToken::Token(Inc),
-				OutToken::Token(JumpLeft),
-				OutToken::Token(Right),
-				OutToken::Token(Right),
-				OutToken::Token(Right),
-				OutToken::WS,
-				OutToken::Token(JumpLeft),
-				OutToken::Token(Left),
-				OutToken::WS,
-				OutToken::Token(JumpLeft),
-				OutToken::Token(Right),
-				OutToken::Token(Right),
-				OutToken::WS,
-				OutToken::Token(Out),
-				OutToken::Token(Right),
-				OutToken::WS,
-				OutToken::Token(Dec),
-				OutToken::Token(Out),
+				Inc, JumpRight, Right, Span, Inc, Inc, Right, Right, Span, Inc,
+				Inc, JumpLeft, Right, Right, Right, Span, JumpLeft, Left, Span,
+				JumpLeft, Right, Right, Span, Out, Right, Span, Dec, Out,
 			],
 		)
 	}
