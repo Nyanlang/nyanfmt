@@ -81,29 +81,37 @@ impl<'a> From<Lexer<'a>> for Formatter {
 	}
 }
 
-impl<'a> Iterator for Formatter {
-	type Item = Vec<Token>;
-
-	fn next(&mut self) -> Option<Self::Item> {
+impl From<Formatter> for Vec<Token> {
+	fn from(mut formatter: Formatter) -> Self {
 		use Token::*;
 
-		let Some(current) = self.token_stream.next() else {
-            return None;
-        };
-		let Some(next) = self.token_stream.peek() else {
-            return Some(vec![current]);
-        };
+		let mut v = vec![];
 
-		if match (&current, next) {
-			(Right | Left, Right | Left) => false,
-			(Right | Left, _)
-			| (Out | In | JumpRight | JumpLeft, Inc | Dec) => true,
-			_ => false,
-		} {
-			Some(vec![current, Token::Span])
-		} else {
-			Some(vec![current])
+		while let Some(token) = formatter.token_stream.next() {
+			let Some(next) = formatter.token_stream.peek() else {
+                v.push(token);
+                break;
+            };
+
+			match token {
+				Right | Left => {
+					v.push(token);
+					if !matches!(next, Right | Left) {
+						v.push(Span);
+					}
+				},
+				Out | In | JumpRight | JumpLeft => {
+					v.push(token);
+					if matches!(next, Inc | Dec) {
+						v.push(Span);
+					}
+				},
+				Span => (),
+				_ => v.push(token),
+			}
 		}
+
+		v
 	}
 }
 
@@ -116,19 +124,20 @@ mod tests {
 	fn lex() {
 		use Token::*;
 
-		let code = "냥냥냥냥냥 냥냥냥~? 냥냥냥냥~? 냥냥? 냥냥냥? 냥냥냥? 냥!!!! 냐-? 냥? 냥? 냐?? 냥~! -! 냐-?? .? 냐냐냐. ";
+		let code = "냥냥냥냥냥  냥냥냥~? 냥냥냥냥~? 냥냥?    냥냥냥? 냥냥냥?냥!!  !!  냐-? 냥?냥?  냐??냥~!-!   냐-??.? 냐  냐냐. ";
 		let lexer = Lexer::new(code.chars());
 		let token_stream: Vec<Token> = lexer.into();
 
 		assert_eq!(
 			token_stream,
 			[
-				Inc, Inc, Inc, Inc, Inc, Inc, Inc, Inc, JumpRight, Right, Inc,
-				Inc, Inc, Inc, JumpRight, Right, Inc, Inc, Right, Inc, Inc,
-				Inc, Right, Inc, Inc, Inc, Right, Inc, Left, Left, Left, Left,
-				Dec, JumpLeft, Right, Inc, Right, Inc, Right, Dec, Right,
-				Right, Inc, JumpRight, Left, JumpLeft, Left, Dec, JumpLeft,
-				Right, Right, Out, Right, Dec, Dec, Dec, Out
+				Inc, Inc, Inc, Inc, Inc, Span, Inc, Inc, Inc, JumpRight, Right,
+				Span, Inc, Inc, Inc, Inc, JumpRight, Right, Span, Inc, Inc,
+				Right, Span, Inc, Inc, Inc, Right, Span, Inc, Inc, Inc, Right,
+				Inc, Left, Left, Span, Left, Left, Span, Dec, JumpLeft, Right,
+				Span, Inc, Right, Inc, Right, Span, Dec, Right, Right, Inc,
+				JumpRight, Left, JumpLeft, Left, Span, Dec, JumpLeft, Right,
+				Right, Out, Right, Span, Dec, Span, Dec, Dec, Out, Span
 			],
 		)
 	}
@@ -141,7 +150,7 @@ mod tests {
 		let rep = Formatter::from(Lexer::new(code.chars()));
 
 		assert_eq!(
-			rep.flatten().collect::<Vec<Token>>(),
+			Vec::from(rep),
 			[
 				Inc, JumpRight, Right, Span, Inc, Inc, Right, Right, Span, Inc,
 				Inc, JumpLeft, Right, Right, Right, Span, JumpLeft, Left, Span,
