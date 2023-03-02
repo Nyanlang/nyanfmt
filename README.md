@@ -1,6 +1,6 @@
 # Nyanfmt
 
-본 포맷터는 [냥랭](https://github.com/sserve-kr/Nyanlang) 언어 자동 코드 포맷터입니다.
+[냥랭](https://github.com/sserve-kr/Nyanlang) 언어를 위한 자동 코드 포맷터입니다.
 
 ## 포맷 규칙
 
