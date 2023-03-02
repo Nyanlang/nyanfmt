@@ -152,6 +152,24 @@ impl From<Formatter> for Vec<Token> {
 	}
 }
 
+fn stringify(v: Vec<Token>) -> String {
+	use Token::*;
+
+	v.into_iter()
+		.map(|tok| match tok {
+			Right => '?',
+			Left => '!',
+			Inc => '냥',
+			Dec => '냐',
+			Out => '.',
+			In => ',',
+			JumpRight => '~',
+			JumpLeft => '-',
+			Span => ' ',
+		})
+		.collect::<String>()
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -196,6 +214,20 @@ mod tests {
 				Span, JumpLeft, Left, Span, JumpLeft, Right, Right, Span, Out,
 				Right, Span, Dec, Out,
 			],
+		)
+	}
+
+	#[test]
+	fn stringify() {
+		let code = " 냥 ~?냥 냥? ?냥냥냥 냥냥냥 -? ??- !- ?? .? 냐.";
+		let lexer: Lexer = code.chars().into();
+		let formatter: Formatter = lexer.into();
+		let formatted_token_stream: Vec<Token> = formatter.into();
+		let output = super::stringify(formatted_token_stream);
+
+		assert_eq!(
+			output,
+			"냥~? 냥냥?? 냥냥냥냥냥 냥-??? -! -?? .? 냐."
 		)
 	}
 }
