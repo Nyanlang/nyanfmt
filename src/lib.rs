@@ -170,6 +170,13 @@ fn stringify(v: Vec<Token>) -> String {
 		.collect::<String>()
 }
 
+pub fn format(code: String) -> String {
+	let lexer: Lexer = code.chars().into();
+	let formatter: Formatter = lexer.into();
+	let formatted_token_stream: Vec<Token> = formatter.into();
+	stringify(formatted_token_stream)
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
