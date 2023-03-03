@@ -54,3 +54,26 @@ pub fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
 		multispace0,
 	))(input)
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use nom::Finish;
+	use Token::*;
+
+	#[test]
+	fn parse_string() {
+		let code = r#"냥냥 !냐??냐? ~- - ?냐냐"#;
+
+		assert_eq!(
+			parse_tokenstream(code).finish(),
+			Ok((
+				"",
+				vec![
+					Inc, Inc, Left, Dec, Right, Right, Dec, Right, JumpRight,
+					JumpLeft, JumpLeft, Right, Dec, Dec
+				]
+			))
+		)
+	}
+}
