@@ -1,11 +1,12 @@
 use nom::{
 	branch::alt,
 	bytes::complete::take_until,
-	character::complete::{char, line_ending, multispace0, space0},
+	character::complete::{char, line_ending, space0},
 	combinator::{cut, eof, map, value},
+	error::Error,
 	multi::{many0, many1},
 	sequence::{delimited, terminated},
-	IResult,
+	Finish, IResult,
 };
 
 use super::token::{Token, TokenStream};
@@ -51,8 +52,10 @@ fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
 	many0(delimited(space0, parse_token, space0))(input)
 }
 
-pub fn parse_code(input: &str) -> IResult<&str, TokenStream> {
+pub fn parse_code(input: &str) -> Result<TokenStream, Error<&str>> {
 	terminated(parse_tokenstream, cut(eof))(input)
+		.finish()
+		.map(|(_, o)| o)
 }
 
 #[cfg(test)]
