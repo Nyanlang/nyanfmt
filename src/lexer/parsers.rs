@@ -1,9 +1,9 @@
 use nom::{
 	branch::alt,
 	bytes::complete::take_until,
-	character::complete::{char, line_ending},
+	character::complete::{char, line_ending, multispace0},
 	combinator::{map, value},
-	multi::many1,
+	multi::{many0, many1},
 	sequence::delimited,
 	IResult,
 };
@@ -31,7 +31,7 @@ fn parse_newline(input: &str) -> IResult<&str, Token> {
 	value(Token::NewLine, many1(line_ending))(input)
 }
 
-pub fn parse_token(input: &str) -> IResult<&str, Token> {
+fn parse_token(input: &str) -> IResult<&str, Token> {
 	alt((
 		parse_right,
 		parse_left,
@@ -44,5 +44,13 @@ pub fn parse_token(input: &str) -> IResult<&str, Token> {
 		parse_debug,
 		parse_comment,
 		parse_newline,
+	))(input)
+}
+
+pub fn parse_tokenstream(input: &str) -> IResult<&str, Vec<Token>> {
+	many0(delimited(
+		multispace0,
+		parse_token,
+		multispace0,
 	))(input)
 }
