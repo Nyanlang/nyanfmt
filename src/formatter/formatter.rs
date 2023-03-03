@@ -1,10 +1,15 @@
-use crate::lexer::Token;
+// use crate::lexer::Token;
+//
+// use super::Span;
 
-trait IFormatter<I>
-where
-	I: Iterator<Item = Token>,
-{
+trait IFormatter {
+	type Input;
 	type Output;
 
-	fn format(&mut self, stream_in: I, stream_out: &mut Vec<Self::Output>);
+	fn format<I, O>(
+		&mut self,
+		stream_in: I,
+		stream_out: &mut Vec<Self::Output>,
+	) where
+		I: Iterator<Item = Self::Input>;
 }
