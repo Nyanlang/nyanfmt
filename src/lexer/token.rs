@@ -1,4 +1,5 @@
-enum Token {
+#[derive(Clone)]
+pub enum Token {
 	Right,
 	Left,
 	Inc,
