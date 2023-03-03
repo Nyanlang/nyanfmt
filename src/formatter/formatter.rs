@@ -1,9 +1,10 @@
 use crate::lexer::Token;
 
-use super::OutStream;
+trait IFormatter<I>
+where
+	I: Iterator<Item = Token>,
+{
+	type Output;
 
-trait IFormatter {
-	fn format<I>(&mut self, stream_in: I, stream_out: &mut OutStream)
-	where
-		I: Iterator<Item = Token>;
+	fn format(&mut self, stream_in: I, stream_out: &mut Vec<Self::Output>);
 }
