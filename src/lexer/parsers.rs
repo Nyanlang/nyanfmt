@@ -1,7 +1,7 @@
 use nom::{
 	branch::alt,
 	bytes::complete::take_until,
-	character::complete::{char, line_ending, multispace0},
+	character::complete::{char, line_ending, multispace0, space0},
 	combinator::{map, value},
 	multi::{many0, many1},
 	sequence::delimited,
@@ -48,30 +48,46 @@ fn parse_token(input: &str) -> IResult<&str, Token> {
 }
 
 pub fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
-	many0(delimited(
-		multispace0,
-		parse_token,
-		multispace0,
-	))(input)
+	many0(delimited(space0, parse_token, space0))(input)
 }
 
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use indoc::indoc;
 	use nom::Finish;
 	use Token::*;
 
 	#[test]
 	fn parse_string() {
-		let code = r#"냥냥 !냐??냐? ~- - ?냐냐"#;
+		let code = indoc! {r#"
+            "주석"냥냥 !냐??
+            냐? ~- -"comme" ?냐냐
+        "#};
 
 		assert_eq!(
 			parse_tokenstream(code).finish(),
 			Ok((
 				"",
 				vec![
-					Inc, Inc, Left, Dec, Right, Right, Dec, Right, JumpRight,
-					JumpLeft, JumpLeft, Right, Dec, Dec
+					Comment("주석".to_owned()),
+					Inc,
+					Inc,
+					Left,
+					Dec,
+					Right,
+					Right,
+					NewLine,
+					Dec,
+					Right,
+					JumpRight,
+					JumpLeft,
+					JumpLeft,
+					Comment("comme".to_owned()),
+					Right,
+					Dec,
+					Dec,
+					NewLine,
 				]
 			))
 		)
