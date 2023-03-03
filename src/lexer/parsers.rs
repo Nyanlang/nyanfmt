@@ -8,7 +8,7 @@ use nom::{
 	IResult,
 };
 
-use super::token::Token;
+use super::token::{Token, TokenStream};
 
 char_token! { parse_right: '?' -> Token::Right }
 char_token! { parse_left: '!' -> Token::Left }
@@ -47,7 +47,7 @@ fn parse_token(input: &str) -> IResult<&str, Token> {
 	))(input)
 }
 
-pub fn parse_tokenstream(input: &str) -> IResult<&str, Vec<Token>> {
+pub fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
 	many0(delimited(
 		multispace0,
 		parse_token,

@@ -12,3 +12,5 @@ pub enum Token {
 	Comment(String),
 	NewLine,
 }
+
+pub type TokenStream = Vec<Token>;
