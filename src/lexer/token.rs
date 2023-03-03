@@ -9,6 +9,6 @@ pub enum Token {
 	JumpRight,
 	JumpLeft,
 	Debug,
-	Comment,
+	Comment(String),
 	NewLine,
 }
