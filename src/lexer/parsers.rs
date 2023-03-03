@@ -2,7 +2,7 @@ use nom::{
 	branch::alt,
 	bytes::complete::take_until,
 	character::complete::{char, line_ending, multispace0, space0},
-	combinator::{eof, map, value},
+	combinator::{cut, eof, map, value},
 	multi::{many0, many1},
 	sequence::{delimited, terminated},
 	IResult,
@@ -52,7 +52,7 @@ fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
 }
 
 pub fn parse_code(input: &str) -> IResult<&str, TokenStream> {
-	terminated(parse_tokenstream, eof)(input)
+	terminated(parse_tokenstream, cut(eof))(input)
 }
 
 #[cfg(test)]
@@ -107,7 +107,7 @@ mod tests {
 
 		assert_eq!(
 			parse_code(code),
-			Err(Error(Error::new(
+			Err(Failure(Error::new(
 				"%$#?",
 				ErrorKind::Eof
 			)))
