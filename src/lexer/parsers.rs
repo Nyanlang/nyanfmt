@@ -1,6 +1,11 @@
 use nom::{
-	branch::alt, bytes::complete::take_until, character::complete::char,
-	combinator::map, sequence::delimited, IResult,
+	branch::alt,
+	bytes::complete::take_until,
+	character::complete::{char, line_ending},
+	combinator::{map, value},
+	multi::many1,
+	sequence::delimited,
+	IResult,
 };
 
 use super::token::Token;
@@ -22,6 +27,10 @@ fn parse_comment(input: &str) -> IResult<&str, Token> {
 	)(input)
 }
 
+fn parse_newline(input: &str) -> IResult<&str, Token> {
+	value(Token::NewLine, many1(line_ending))(input)
+}
+
 pub fn parse_token(input: &str) -> IResult<&str, Token> {
 	alt((
 		parse_right,
@@ -34,5 +43,6 @@ pub fn parse_token(input: &str) -> IResult<&str, Token> {
 		parse_jump_left,
 		parse_debug,
 		parse_comment,
+		parse_newline,
 	))(input)
 }
