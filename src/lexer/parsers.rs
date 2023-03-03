@@ -47,8 +47,12 @@ fn parse_token(input: &str) -> IResult<&str, Token> {
 	))(input)
 }
 
-pub fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
+fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
 	many0(delimited(space0, parse_token, space0))(input)
+}
+
+pub fn parse_code(input: &str) -> IResult<&str, TokenStream> {
+	terminated(parse_tokenstream, eof)(input)
 }
 
 #[cfg(test)]
@@ -102,8 +106,11 @@ mod tests {
 		let code = r#"냥냥 ,!냐%$#?"#;
 
 		assert_eq!(
-			parse_tokenstream(code),
-			Err(Failure(Error::new("", ErrorKind::Eof)))
+			parse_code(code),
+			Err(Error(Error::new(
+				"%$#?",
+				ErrorKind::Eof
+			)))
 		)
 	}
 }
