@@ -2,9 +2,9 @@ use nom::{
 	branch::alt,
 	bytes::complete::take_until,
 	character::complete::{char, line_ending, multispace0, space0},
-	combinator::{map, value},
+	combinator::{eof, map, value},
 	multi::{many0, many1},
-	sequence::delimited,
+	sequence::{delimited, terminated},
 	IResult,
 };
 
@@ -55,7 +55,11 @@ pub fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
 mod tests {
 	use super::*;
 	use indoc::indoc;
-	use nom::Finish;
+	use nom::{
+		error::{Error, ErrorKind},
+		Err::*,
+		Finish,
+	};
 	use Token::*;
 
 	#[test]
@@ -90,6 +94,16 @@ mod tests {
 					NewLine,
 				]
 			))
+		)
+	}
+
+	#[test]
+	fn parse_string2() {
+		let code = r#"냥냥 ,!냐%$#?"#;
+
+		assert_eq!(
+			parse_tokenstream(code),
+			Err(Failure(Error::new("", ErrorKind::Eof)))
 		)
 	}
 }
