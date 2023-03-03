@@ -2,14 +2,14 @@
 //
 // use super::Span;
 
-trait IFormatter {
+trait IFormatter<I>
+where
+	I: Iterator<Item = Self::Input>,
+{
 	type Input;
 	type Output;
 
-	fn format<I, O>(
-		&mut self,
-		stream_in: I,
-		stream_out: &mut Vec<Self::Output>,
-	) where
-		I: Iterator<Item = Self::Input>;
+	fn get_code(&self) -> I;
+
+	fn format<O>(&mut self, stream_out: &mut Vec<Self::Output>);
 }
