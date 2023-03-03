@@ -110,10 +110,7 @@ mod tests {
 
 		assert_eq!(
 			parse_code(code),
-			Err(Failure(Error::new(
-				"%$#?",
-				ErrorKind::Eof
-			)))
+			Err(Error::new("%$#?", ErrorKind::Eof))
 		)
 	}
 }
