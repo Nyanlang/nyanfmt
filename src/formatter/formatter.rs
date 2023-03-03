@@ -11,7 +11,7 @@ where
 
 	fn get_code(&self) -> I;
 
-	fn format<O>(&mut self, stream_out: &mut Vec<Self::Output>);
+	fn format(&mut self, stream_out: &mut Vec<Self::Output>);
 }
 
 struct Formatter<I>
@@ -33,7 +33,7 @@ where
 		self.iter.clone()
 	}
 
-	fn format<O>(&mut self, stream_out: &mut Vec<Self::Output>) {
+	fn format(&mut self, stream_out: &mut Vec<Self::Output>) {
 		let mut iter = self.get_code().clone().peekable();
 
 		let mut count = 0;
@@ -67,5 +67,52 @@ where
 				_ => (),
 			}
 		}
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use Token::*;
+
+	#[test]
+	fn format() {
+		let ts = [
+			Right,
+			JumpRight,
+			Inc,
+			Comment("com".to_owned()),
+			Dec,
+			Left,
+			JumpRight,
+			Dec,
+			Dec,
+		];
+
+		let mut f = Formatter {
+			iter: ts.into_iter(),
+		};
+
+		let mut buf = Vec::new();
+		f.format(&mut buf);
+
+		assert_eq!(
+			buf,
+			[
+				Span::Token(Right),
+				Span::Span,
+				Span::Token(JumpRight),
+				Span::Span,
+				Span::Token(Inc),
+				Span::Token(Comment("com".to_owned())),
+				Span::Token(Dec),
+				Span::Token(Left),
+				Span::Span,
+				Span::Token(JumpRight),
+				Span::Span,
+				Span::Token(Dec),
+				Span::Token(Dec)
+			]
+		)
 	}
 }
