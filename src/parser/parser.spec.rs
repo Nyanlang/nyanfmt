@@ -1,5 +1,8 @@
 use super::*;
-use nom::{error::ErrorKind, Finish};
+use nom::{
+	error::{Error, ErrorKind},
+	Finish,
+};
 use pretty_assertions::assert_eq;
 
 #[test]
@@ -39,10 +42,7 @@ fn must_fail_to_parse_head_if_there_are_no_matched_tokens() {
 
 	assert_eq!(
 		parse_head(code.clone()).finish(),
-		Err(nom::error::Error::new(
-			code,
-			ErrorKind::Tag
-		))
+		Err(Error::new(code, ErrorKind::Tag))
 	);
 }
 
@@ -89,10 +89,7 @@ fn must_fail_to_parse_body_if_there_are_no_matched_tokens() {
 
 	assert_eq!(
 		parse_body(code.clone()).finish(),
-		Err(nom::error::Error::new(
-			code,
-			ErrorKind::Tag
-		))
+		Err(Error::new(code, ErrorKind::Tag))
 	);
 }
 
@@ -133,10 +130,7 @@ fn must_fail_to_parse_tail_if_there_are_no_matched_tokens() {
 
 	assert_eq!(
 		parse_tail(code.clone()).finish(),
-		Err(nom::error::Error::new(
-			code,
-			ErrorKind::Tag
-		))
+		Err(Error::new(code, ErrorKind::Tag))
 	);
 }
 
@@ -227,7 +221,7 @@ fn must_fail_to_parse_word_if_input_is_empty() {
 
 	assert_eq!(
 		parse_word(code).finish(),
-		Err(nom::error::Error::new(
+		Err(Error::new(
 			TokenStream::new(),
 			ErrorKind::Verify
 		))
@@ -304,7 +298,7 @@ fn test_parse_words1_with_empty_input() {
 
 	assert_eq!(
 		parse_words1(code).finish(),
-		Err(nom::error::Error::new(
+		Err(Error::new(
 			TokenStream::new(),
 			ErrorKind::Verify
 		))
