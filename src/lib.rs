@@ -1,4 +1,3 @@
-mod formatter;
 mod lexer;
 
 use std::{iter::Peekable, str::Chars, vec::IntoIter};
