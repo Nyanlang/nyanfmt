@@ -9,7 +9,7 @@ use nom::{
 	Finish, IResult,
 };
 
-use super::token::{Token, TokenStream};
+use super::token::Token;
 
 char_token! { parse_right: '?' -> Token::Right }
 char_token! { parse_left: '!' -> Token::Left }
@@ -48,11 +48,11 @@ fn parse_token(input: &str) -> IResult<&str, Token> {
 	))(input)
 }
 
-fn parse_tokenstream(input: &str) -> IResult<&str, TokenStream> {
+fn parse_tokenstream(input: &str) -> IResult<&str, Vec<Token>> {
 	many0(delimited(space0, parse_token, space0))(input)
 }
 
-pub fn parse_code(input: &str) -> Result<TokenStream, Error<&str>> {
+pub fn parse_code(input: &str) -> Result<Vec<Token>, Error<&str>> {
 	terminated(parse_tokenstream, cut(eof))(input)
 		.finish()
 		.map(|(_, o)| o)
@@ -64,7 +64,6 @@ mod tests {
 	use indoc::indoc;
 	use nom::{
 		error::{Error, ErrorKind},
-		Err::*,
 		Finish,
 	};
 	use Token::*;

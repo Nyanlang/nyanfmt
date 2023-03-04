@@ -13,4 +13,7 @@ pub enum Token {
 	NewLine,
 }
 
-pub type TokenStream = Vec<Token>;
+#[derive(Debug, PartialEq, Clone)]
+pub struct TokenStream<'a> {
+	stream: &'a [Token],
+}
