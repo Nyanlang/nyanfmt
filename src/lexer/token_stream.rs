@@ -15,9 +15,14 @@ impl<'a> TokenStream<'a> {
 	}
 }
 
-impl<'a> From<&'a [Token]> for TokenStream<'a> {
-	fn from(stream: &'a [Token]) -> Self {
-		Self { stream }
+impl<'a, T> From<T> for TokenStream<'a>
+where
+	&'a [Token]: From<T>,
+{
+	fn from(stream: T) -> Self {
+		Self {
+			stream: stream.into(),
+		}
 	}
 }
 
