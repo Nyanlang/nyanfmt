@@ -8,12 +8,3 @@ macro_rules! char_token {
 		}
 	};
 }
-
-macro_rules! ts {
-    () => {
-        TokenStream::new()
-    };
-    ($($tok: expr),*) => {
-        TokenStream::from(&[$($tok)*][..])
-    };
-}
