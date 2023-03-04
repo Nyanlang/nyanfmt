@@ -2,9 +2,8 @@ use super::ast::*;
 use crate::lexer::{Token::*, TokenStream};
 use nom::{
 	branch::alt,
-	bytes::complete::tag,
-	combinator::{map, opt, value, verify},
-	multi::many1,
+	combinator::{map, opt, verify},
+	multi::{many0, many1},
 	sequence::tuple,
 	IResult,
 };
@@ -57,6 +56,14 @@ fn parse_word(input: TokenStream) -> IResult<TokenStream, Word> {
 		),
 		|(head, body, tail)| Word { head, body, tail },
 	)(input)
+}
+
+fn parse_words0(input: TokenStream) -> IResult<TokenStream, Vec<Word>> {
+	many0(parse_word)(input)
+}
+
+fn parse_words1(input: TokenStream) -> IResult<TokenStream, Vec<Word>> {
+	many1(parse_word)(input)
 }
 
 #[cfg(test)]
