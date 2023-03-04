@@ -148,16 +148,16 @@ fn must_parse_word() {
 		parse_word(code),
 		Ok((
 			ts![Out, Debug],
-			Word {
-				head: None,
-				body: Some(Body(vec![
+			word!(
+				,
+				[
 					BodyTok::Out,
 					BodyTok::JumpRight,
 					BodyTok::In,
 					BodyTok::JumpLeft
-				])),
-				tail: Some(Tail(vec![TailTok::Left]))
-			}
+				],
+				[TailTok::Left],
+			)
 		))
 	)
 }
@@ -170,15 +170,11 @@ fn must_parse_word2() {
 		parse_word(code),
 		Ok((
 			ts![Out, Debug],
-			Word {
-				head: Some(Head(vec![HeadTok::Debug, HeadTok::Inc])),
-				body: Some(Body(vec![
-					BodyTok::JumpRight,
-					BodyTok::In,
-					BodyTok::JumpLeft
-				])),
-				tail: Some(Tail(vec![TailTok::Left]))
-			}
+			word!(
+				[HeadTok::Debug, HeadTok::Inc],
+				[BodyTok::JumpRight, BodyTok::In, BodyTok::JumpLeft],
+				[TailTok::Left],
+			)
 		))
 	)
 }
@@ -191,11 +187,7 @@ fn parse_word_only_match_head() {
 		parse_word(code),
 		Ok((
 			TokenStream::new(),
-			Word {
-				head: Some(Head(vec![HeadTok::Inc, HeadTok::Inc])),
-				body: None,
-				tail: None
-			}
+			word!([HeadTok::Inc, HeadTok::Inc],,)
 		))
 	)
 }
@@ -208,14 +200,7 @@ fn parse_word_only_match_body() {
 		parse_word(code),
 		Ok((
 			ts![Dec, JumpLeft],
-			Word {
-				head: None,
-				body: Some(Body(vec![
-					BodyTok::Out,
-					BodyTok::JumpLeft
-				])),
-				tail: None
-			}
+			word!(, [BodyTok::Out, BodyTok::JumpLeft],),
 		))
 	)
 }
@@ -228,11 +213,10 @@ fn parse_word_only_match_tail() {
 		parse_word(code),
 		Ok((
 			ts![Debug],
-			Word {
-				head: None,
-				body: None,
-				tail: Some(Tail(vec![TailTok::Left, TailTok::Left]))
-			}
+			word!(
+				,,
+				[TailTok::Left, TailTok::Left]
+			)
 		))
 	)
 }
@@ -262,31 +246,16 @@ fn test_parse_words0() {
 		Ok((
 			TokenStream::new(),
 			vec![
-				Word {
-					head: Some(Head(vec![HeadTok::Inc, HeadTok::Dec])),
-					body: Some(Body(vec![BodyTok::Out, BodyTok::In])),
-					tail: Some(Tail(vec![
-						TailTok::Right,
-						TailTok::Left
-					])),
-				},
-				Word {
-					head: Some(Head(vec![
-						HeadTok::Inc,
-						HeadTok::Inc,
-						HeadTok::Debug
-					])),
-					body: Some(Body(vec![
-						BodyTok::Out,
-						BodyTok::JumpLeft,
-						BodyTok::JumpRight
-					])),
-					tail: Some(Tail(vec![
-						TailTok::Left,
-						TailTok::Left,
-						TailTok::Left,
-					])),
-				},
+				word!(
+					[HeadTok::Inc, HeadTok::Dec],
+					[BodyTok::Out, BodyTok::In],
+					[TailTok::Right, TailTok::Left],
+				),
+				word!(
+					[HeadTok::Inc, HeadTok::Inc, HeadTok::Debug],
+					[BodyTok::Out, BodyTok::JumpLeft, BodyTok::JumpRight],
+					[TailTok::Left, TailTok::Left, TailTok::Left],
+				)
 			]
 		))
 	)
@@ -314,31 +283,16 @@ fn test_parse_words1() {
 		Ok((
 			TokenStream::new(),
 			vec![
-				Word {
-					head: Some(Head(vec![HeadTok::Inc, HeadTok::Dec])),
-					body: Some(Body(vec![BodyTok::Out, BodyTok::In])),
-					tail: Some(Tail(vec![
-						TailTok::Right,
-						TailTok::Left
-					])),
-				},
-				Word {
-					head: Some(Head(vec![
-						HeadTok::Inc,
-						HeadTok::Inc,
-						HeadTok::Debug
-					])),
-					body: Some(Body(vec![
-						BodyTok::Out,
-						BodyTok::JumpLeft,
-						BodyTok::JumpRight
-					])),
-					tail: Some(Tail(vec![
-						TailTok::Left,
-						TailTok::Left,
-						TailTok::Left,
-					])),
-				},
+				word!(
+					[HeadTok::Inc, HeadTok::Dec],
+					[BodyTok::Out, BodyTok::In],
+					[TailTok::Right, TailTok::Left],
+				),
+				word!(
+					[HeadTok::Inc, HeadTok::Inc, HeadTok::Debug],
+					[BodyTok::Out, BodyTok::JumpLeft, BodyTok::JumpRight],
+					[TailTok::Left, TailTok::Left, TailTok::Left],
+				),
 			]
 		))
 	)
