@@ -3,8 +3,9 @@ use crate::lexer::{Token::*, TokenStream};
 use nom::{
 	branch::alt,
 	bytes::complete::tag,
-	combinator::{map, value},
+	combinator::{map, opt, value, verify},
 	multi::many1,
+	sequence::tuple,
 	IResult,
 };
 
@@ -41,6 +42,20 @@ fn parse_tail(input: TokenStream) -> IResult<TokenStream, Tail> {
 	map(
 		many1(alt((parse_right, parse_left))),
 		Tail,
+	)(input)
+}
+
+fn parse_word(input: TokenStream) -> IResult<TokenStream, Word> {
+	map(
+		verify(
+			tuple((
+				opt(parse_head),
+				opt(parse_body),
+				opt(parse_tail),
+			)),
+			|o| !matches!(o, (None, None, None)),
+		),
+		|(head, body, tail)| Word { head, body, tail },
 	)(input)
 }
 

@@ -30,8 +30,9 @@ pub enum TailTok {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Tail(pub Vec<TailTok>);
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct Word {
-	Head: Option<Head>,
-	Body: Option<Body>,
-	Tail: Option<Tail>,
+	pub head: Option<Head>,
+	pub body: Option<Body>,
+	pub tail: Option<Tail>,
 }
