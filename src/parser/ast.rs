@@ -1,22 +1,28 @@
 struct Root;
 
-pub enum Head {
+pub enum HeadTok {
 	Inc,
 	Dec,
 	Debug,
 }
 
-pub enum Body {
+pub struct Head(pub Vec<HeadTok>);
+
+pub enum BodyTok {
 	Out,
 	In,
 	JumpRight,
 	JumpLeft,
 }
 
-pub enum Tail {
+pub struct Body(pub Vec<BodyTok>);
+
+pub enum TailTok {
 	Right,
 	Left,
 }
+
+pub struct Tail(pub Vec<TailTok>);
 
 pub struct Word {
 	Head: Option<Head>,
