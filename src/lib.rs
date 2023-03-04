@@ -1,6 +1,7 @@
+#[macro_use]
+mod util;
 mod lexer;
 mod parser;
-mod util;
 
 use std::{iter::Peekable, str::Chars, vec::IntoIter};
 
