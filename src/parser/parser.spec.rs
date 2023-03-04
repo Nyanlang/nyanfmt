@@ -4,7 +4,7 @@ use pretty_assertions::assert_eq;
 
 #[test]
 fn parse_head_tokens() {
-	let code = TokenStream::from(&[Inc, Debug, Inc, Dec][..]);
+	let code = ts![Inc, Debug, Inc, Dec];
 
 	assert_eq!(
 		parse_head(code),
@@ -22,20 +22,20 @@ fn parse_head_tokens() {
 
 #[test]
 fn parse_head_tokens2() {
-	let code = TokenStream::from(&[Inc, Debug, Right, Inc, Dec][..]);
+	let code = ts![Inc, Debug, Right, Inc, Dec];
 
 	assert_eq!(
 		parse_head(code),
 		Ok((
-			TokenStream::from(&[Right, Inc, Dec,][..]),
-			Head(vec![HeadTok::Inc, HeadTok::Debug,])
+			ts![Right, Inc, Dec],
+			Head(vec![HeadTok::Inc, HeadTok::Debug])
 		))
 	)
 }
 
 #[test]
 fn must_fail_to_parse_head_if_there_are_no_matched_tokens() {
-	let code = TokenStream::from(&[Out, Inc, Debug, Right, Inc, Dec][..]);
+	let code = ts![Out, Inc, Debug, Right, Inc, Dec];
 
 	assert_eq!(
 		parse_head(code.clone()).finish(),
@@ -48,14 +48,12 @@ fn must_fail_to_parse_head_if_there_are_no_matched_tokens() {
 
 #[test]
 fn parse_body_tokens() {
-	let code = TokenStream::from(
-		&[Out, JumpRight, JumpRight, Dec, In, JumpLeft, Out][..],
-	);
+	let code = ts![Out, JumpRight, JumpRight, Dec, In, JumpLeft, Out];
 
 	assert_eq!(
 		parse_body(code),
 		Ok((
-			TokenStream::from(&[Dec, In, JumpLeft, Out][..]),
+			ts![Dec, In, JumpLeft, Out],
 			Body(vec![
 				BodyTok::Out,
 				BodyTok::JumpRight,
@@ -67,8 +65,7 @@ fn parse_body_tokens() {
 
 #[test]
 fn parse_body_tokens2() {
-	let code =
-		TokenStream::from(&[Out, JumpRight, JumpRight, In, JumpLeft, Out][..]);
+	let code = ts![Out, JumpRight, JumpRight, In, JumpLeft, Out];
 
 	assert_eq!(
 		parse_body(code),
@@ -88,9 +85,7 @@ fn parse_body_tokens2() {
 
 #[test]
 fn must_fail_to_parse_body_if_there_are_no_matched_tokens() {
-	let code = TokenStream::from(
-		&[Debug, Out, JumpRight, JumpRight, In, JumpLeft, Out][..],
-	);
+	let code = ts![Debug, Out, JumpRight, JumpRight, In, JumpLeft, Out];
 
 	assert_eq!(
 		parse_body(code.clone()).finish(),
@@ -103,7 +98,7 @@ fn must_fail_to_parse_body_if_there_are_no_matched_tokens() {
 
 #[test]
 fn parse_tail_tokens() {
-	let code = TokenStream::from(&[Right, Left, Right, Right][..]);
+	let code = ts![Right, Left, Right, Right];
 
 	assert_eq!(
 		parse_tail(code),
@@ -121,21 +116,20 @@ fn parse_tail_tokens() {
 
 #[test]
 fn parse_tail_tokens2() {
-	let code = TokenStream::from(&[Right, Left, JumpRight, Right, Right][..]);
+	let code = ts![Right, Left, JumpRight, Right, Right];
 
 	assert_eq!(
 		parse_tail(code),
 		Ok((
-			TokenStream::from(&[JumpRight, Right, Right][..]),
-			Tail(vec![TailTok::Right, TailTok::Left,])
+			ts![JumpRight, Right, Right],
+			Tail(vec![TailTok::Right, TailTok::Left])
 		))
 	)
 }
 
 #[test]
 fn must_fail_to_parse_tail_if_there_are_no_matched_tokens() {
-	let code =
-		TokenStream::from(&[Out, Right, Left, JumpRight, Right, Right][..]);
+	let code = ts![Out, Right, Left, JumpRight, Right, Right];
 
 	assert_eq!(
 		parse_tail(code.clone()).finish(),
@@ -148,14 +142,12 @@ fn must_fail_to_parse_tail_if_there_are_no_matched_tokens() {
 
 #[test]
 fn must_parse_word() {
-	let code = TokenStream::from(
-		&[Out, JumpRight, In, JumpLeft, Left, Out, Debug][..],
-	);
+	let code = ts![Out, JumpRight, In, JumpLeft, Left, Out, Debug];
 
 	assert_eq!(
 		parse_word(code),
 		Ok((
-			TokenStream::from(&[Out, Debug][..]),
+			ts![Out, Debug],
 			Word {
 				head: None,
 				body: Some(Body(vec![
@@ -172,18 +164,14 @@ fn must_parse_word() {
 
 #[test]
 fn must_parse_word2() {
-	let code = TokenStream::from(
-		&[Debug, Inc, JumpRight, In, JumpLeft, Left, Out, Debug][..],
-	);
+	let code = ts![Debug, Inc, JumpRight, In, JumpLeft, Left, Out, Debug];
 
 	assert_eq!(
 		parse_word(code),
 		Ok((
-			TokenStream::from(&[Out, Debug][..]),
+			ts![Out, Debug],
 			Word {
-				head: Some(Head(
-					vec![HeadTok::Debug, HeadTok::Inc,]
-				)),
+				head: Some(Head(vec![HeadTok::Debug, HeadTok::Inc])),
 				body: Some(Body(vec![
 					BodyTok::JumpRight,
 					BodyTok::In,
@@ -197,14 +185,14 @@ fn must_parse_word2() {
 
 #[test]
 fn parse_word_only_match_head() {
-	let code = TokenStream::from(&[Inc, Inc][..]);
+	let code = ts![Inc, Inc];
 
 	assert_eq!(
 		parse_word(code),
 		Ok((
 			TokenStream::new(),
 			Word {
-				head: Some(Head(vec![HeadTok::Inc, HeadTok::Inc,])),
+				head: Some(Head(vec![HeadTok::Inc, HeadTok::Inc])),
 				body: None,
 				tail: None
 			}
@@ -214,12 +202,12 @@ fn parse_word_only_match_head() {
 
 #[test]
 fn parse_word_only_match_body() {
-	let code = TokenStream::from(&[Out, JumpLeft, Dec, JumpLeft][..]);
+	let code = ts![Out, JumpLeft, Dec, JumpLeft];
 
 	assert_eq!(
 		parse_word(code),
 		Ok((
-			TokenStream::from(&[Dec, JumpLeft][..]),
+			ts![Dec, JumpLeft],
 			Word {
 				head: None,
 				body: Some(Body(vec![
@@ -234,12 +222,12 @@ fn parse_word_only_match_body() {
 
 #[test]
 fn parse_word_only_match_tail() {
-	let code = TokenStream::from(&[Left, Left, Debug][..]);
+	let code = ts![Left, Left, Debug];
 
 	assert_eq!(
 		parse_word(code),
 		Ok((
-			TokenStream::from(&[Debug][..]),
+			ts![Debug],
 			Word {
 				head: None,
 				body: None,
@@ -264,12 +252,10 @@ fn must_fail_to_parse_word_if_input_is_empty() {
 
 #[test]
 fn test_parse_words0() {
-	let code = TokenStream::from(
-		&[
-			Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
-			JumpRight, Left, Left, Left,
-		][..],
-	);
+	let code = ts![
+		Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
+		JumpRight, Left, Left, Left
+	];
 
 	assert_eq!(
 		parse_words0(code),
@@ -318,12 +304,10 @@ fn test_parse_words0_with_empty_input() {
 
 #[test]
 fn test_parse_words1() {
-	let code = TokenStream::from(
-		&[
-			Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
-			JumpRight, Left, Left, Left,
-		][..],
-	);
+	let code = ts![
+		Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
+		JumpRight, Left, Left, Left
+	];
 
 	assert_eq!(
 		parse_words1(code),
