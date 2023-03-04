@@ -103,3 +103,25 @@ impl<'a> InputTake for TokenStream<'a> {
 }
 
 impl<'a> UnspecializedInput for TokenStream<'a> {}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use nom::{bytes::complete::tag, error::ErrorKind};
+	use Token::*;
+
+	#[test]
+	fn test_tag() {
+		let p = tag::<_, _, (_, ErrorKind)>(&Debug);
+
+		let code = TokenStream::from(&[Debug, NewLine][..]);
+
+		assert_eq!(
+			p(code),
+			Ok((
+				TokenStream::from(&[NewLine][..]),
+				TokenStream::from(&[Debug][..])
+			))
+		)
+	}
+}
