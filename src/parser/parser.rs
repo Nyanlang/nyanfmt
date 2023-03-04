@@ -8,41 +8,15 @@ use nom::{
 	IResult,
 };
 
-fn parse_inc(input: TokenStream) -> IResult<TokenStream, HeadTok> {
-	value(HeadTok::Inc, tag(&Inc))(input)
-}
-
-fn parse_dec(input: TokenStream) -> IResult<TokenStream, HeadTok> {
-	value(HeadTok::Dec, tag(&Dec))(input)
-}
-
-fn parse_debug(input: TokenStream) -> IResult<TokenStream, HeadTok> {
-	value(HeadTok::Debug, tag(&Debug))(input)
-}
-
-fn parse_out(input: TokenStream) -> IResult<TokenStream, BodyTok> {
-	value(BodyTok::Out, tag(&Out))(input)
-}
-
-fn parse_in(input: TokenStream) -> IResult<TokenStream, BodyTok> {
-	value(BodyTok::In, tag(&In))(input)
-}
-
-fn parse_jump_righy(input: TokenStream) -> IResult<TokenStream, BodyTok> {
-	value(BodyTok::JumpRight, tag(&JumpRight))(input)
-}
-
-fn parse_jump_left(input: TokenStream) -> IResult<TokenStream, BodyTok> {
-	value(BodyTok::JumpLeft, tag(&JumpLeft))(input)
-}
-
-fn parse_right(input: TokenStream) -> IResult<TokenStream, TailTok> {
-	value(TailTok::Right, tag(&Right))(input)
-}
-
-fn parse_left(input: TokenStream) -> IResult<TokenStream, TailTok> {
-	value(TailTok::Left, tag(&Left))(input)
-}
+parse_token! { parse_inc: Inc => HeadTok::Inc => HeadTok }
+parse_token! { parse_dec: Dec => HeadTok::Dec => HeadTok }
+parse_token! { parse_debug: Debug => HeadTok::Debug => HeadTok }
+parse_token! { parse_out: Out => BodyTok::Out => HeadTok }
+parse_token! { parse_in: In => BodyTok::In => HeadTok }
+parse_token! { parse_jump_right: JumpRight => BodyTok::JumpRight => HeadTok }
+parse_token! { parse_jump_left: JumpLeft => BodyTok::JumpLeft => HeadTok }
+parse_token! { parse_right: Right => TailTok::Right => HeadTok }
+parse_token! { parse_left: Left => TailTok::Left => HeadTok }
 
 fn parse_head(input: TokenStream) -> IResult<TokenStream, Head> {
 	map(
@@ -56,7 +30,7 @@ fn parse_body(input: TokenStream) -> IResult<TokenStream, Body> {
 		many1(alt((
 			parse_out,
 			parse_in,
-			parse_jump_righy,
+			parse_jump_right,
 			parse_jump_left,
 		))),
 		Body,
