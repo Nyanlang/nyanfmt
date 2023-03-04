@@ -11,12 +11,12 @@ use nom::{
 parse_token! { parse_inc: Inc => HeadTok::Inc => HeadTok }
 parse_token! { parse_dec: Dec => HeadTok::Dec => HeadTok }
 parse_token! { parse_debug: Debug => HeadTok::Debug => HeadTok }
-parse_token! { parse_out: Out => BodyTok::Out => HeadTok }
-parse_token! { parse_in: In => BodyTok::In => HeadTok }
-parse_token! { parse_jump_right: JumpRight => BodyTok::JumpRight => HeadTok }
-parse_token! { parse_jump_left: JumpLeft => BodyTok::JumpLeft => HeadTok }
-parse_token! { parse_right: Right => TailTok::Right => HeadTok }
-parse_token! { parse_left: Left => TailTok::Left => HeadTok }
+parse_token! { parse_out: Out => BodyTok::Out => BodyTok }
+parse_token! { parse_in: In => BodyTok::In => BodyTok }
+parse_token! { parse_jump_right: JumpRight => BodyTok::JumpRight => BodyTok }
+parse_token! { parse_jump_left: JumpLeft => BodyTok::JumpLeft => BodyTok }
+parse_token! { parse_right: Right => TailTok::Right => TailTok }
+parse_token! { parse_left: Left => TailTok::Left => TailTok }
 
 fn parse_head(input: TokenStream) -> IResult<TokenStream, Head> {
 	map(
