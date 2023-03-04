@@ -1,6 +1,7 @@
 use super::Token;
 use nom::{
-	FindToken, InputIter, InputLength, InputTake, Needed, UnspecializedInput,
+	Compare, CompareResult, FindToken, InputIter, InputLength, InputTake,
+	Needed, UnspecializedInput,
 };
 use std::{iter::Enumerate, slice::Iter};
 
@@ -23,6 +24,19 @@ where
 		Self {
 			stream: stream.into(),
 		}
+	}
+}
+
+impl<'a> Compare<&Token> for TokenStream<'a> {
+	fn compare(&self, t: &Token) -> CompareResult {
+		match self.stream.get(0) {
+			Some(v) if v == t => CompareResult::Ok,
+			_ => CompareResult::Error,
+		}
+	}
+
+	fn compare_no_case(&self, t: &Token) -> nom::CompareResult {
+		self.compare(t)
 	}
 }
 
