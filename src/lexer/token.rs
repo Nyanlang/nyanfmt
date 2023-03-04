@@ -20,6 +20,18 @@ pub struct TokenStream<'a> {
 	stream: &'a [Token],
 }
 
+impl<'a> TokenStream<'a> {
+	fn new() -> Self {
+		Self { stream: &[] }
+	}
+}
+
+impl<'a> From<&'a [Token]> for TokenStream<'a> {
+	fn from(stream: &'a [Token]) -> Self {
+		Self { stream }
+	}
+}
+
 impl<'a> InputLength for TokenStream<'a> {
 	fn input_len(&self) -> usize {
 		self.stream.len()
