@@ -69,3 +69,7 @@ fn parse_tail(input: TokenStream) -> IResult<TokenStream, Tail> {
 		Tail,
 	)(input)
 }
+
+#[cfg(test)]
+#[path = "parser.spec.rs"]
+mod tests;
