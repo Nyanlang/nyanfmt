@@ -2,7 +2,7 @@ macro_rules! ts {
     () => {
         TokenStream::new()
     };
-    ($($tok: expr),*) => {
+    ($($tok: expr),* $(,)?) => {
         TokenStream::from(&[$($tok,)*][..])
     };
 }

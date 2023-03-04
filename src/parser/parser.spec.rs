@@ -254,7 +254,7 @@ fn must_fail_to_parse_word_if_input_is_empty() {
 fn test_parse_words0() {
 	let code = ts![
 		Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
-		JumpRight, Left, Left, Left
+		JumpRight, Left, Left, Left,
 	];
 
 	assert_eq!(
@@ -306,7 +306,7 @@ fn test_parse_words0_with_empty_input() {
 fn test_parse_words1() {
 	let code = ts![
 		Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
-		JumpRight, Left, Left, Left
+		JumpRight, Left, Left, Left,
 	];
 
 	assert_eq!(
