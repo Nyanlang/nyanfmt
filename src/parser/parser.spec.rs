@@ -1,5 +1,6 @@
 use super::*;
 use nom::{error::ErrorKind, Finish};
+use pretty_assertions::assert_eq;
 
 #[test]
 fn parse_head_tokens() {
@@ -254,6 +255,117 @@ fn must_fail_to_parse_word_if_input_is_empty() {
 
 	assert_eq!(
 		parse_word(code).finish(),
+		Err(nom::error::Error::new(
+			TokenStream::new(),
+			ErrorKind::Verify
+		))
+	);
+}
+
+#[test]
+fn test_parse_words0() {
+	let code = TokenStream::from(
+		&[
+			Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
+			JumpRight, Left, Left, Left,
+		][..],
+	);
+
+	assert_eq!(
+		parse_words0(code),
+		Ok((
+			TokenStream::new(),
+			vec![
+				Word {
+					head: Some(Head(vec![HeadTok::Inc, HeadTok::Dec])),
+					body: Some(Body(vec![BodyTok::Out, BodyTok::In])),
+					tail: Some(Tail(vec![
+						TailTok::Right,
+						TailTok::Left
+					])),
+				},
+				Word {
+					head: Some(Head(vec![
+						HeadTok::Inc,
+						HeadTok::Inc,
+						HeadTok::Debug
+					])),
+					body: Some(Body(vec![
+						BodyTok::Out,
+						BodyTok::JumpLeft,
+						BodyTok::JumpRight
+					])),
+					tail: Some(Tail(vec![
+						TailTok::Left,
+						TailTok::Left,
+						TailTok::Left,
+					])),
+				},
+			]
+		))
+	)
+}
+
+#[test]
+fn test_parse_words0_with_empty_input() {
+	let code = TokenStream::new();
+
+	assert_eq!(
+		parse_words0(code),
+		Ok((TokenStream::new(), vec![]))
+	)
+}
+
+#[test]
+fn test_parse_words1() {
+	let code = TokenStream::from(
+		&[
+			Inc, Dec, Out, In, Right, Left, Inc, Inc, Debug, Out, JumpLeft,
+			JumpRight, Left, Left, Left,
+		][..],
+	);
+
+	assert_eq!(
+		parse_words1(code),
+		Ok((
+			TokenStream::new(),
+			vec![
+				Word {
+					head: Some(Head(vec![HeadTok::Inc, HeadTok::Dec])),
+					body: Some(Body(vec![BodyTok::Out, BodyTok::In])),
+					tail: Some(Tail(vec![
+						TailTok::Right,
+						TailTok::Left
+					])),
+				},
+				Word {
+					head: Some(Head(vec![
+						HeadTok::Inc,
+						HeadTok::Inc,
+						HeadTok::Debug
+					])),
+					body: Some(Body(vec![
+						BodyTok::Out,
+						BodyTok::JumpLeft,
+						BodyTok::JumpRight
+					])),
+					tail: Some(Tail(vec![
+						TailTok::Left,
+						TailTok::Left,
+						TailTok::Left,
+					])),
+				},
+			]
+		))
+	)
+}
+
+#[test]
+fn test_parse_words1_with_empty_input() {
+	let code = TokenStream::new();
+
+	assert_eq!(
+		parse_words1(code).finish(),
 		Err(nom::error::Error::new(
 			TokenStream::new(),
 			ErrorKind::Verify
