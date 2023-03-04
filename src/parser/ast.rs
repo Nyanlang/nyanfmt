@@ -1,25 +1,25 @@
 struct Root;
 
-enum Head {
+pub enum Head {
 	Inc,
 	Dec,
 	Debug,
 }
 
-enum Body {
+pub enum Body {
 	Out,
 	In,
 	JumpRight,
 	JumpLeft,
 }
 
-enum Tail {
+pub enum Tail {
 	Right,
 	Left,
 }
 
-struct Word {
-	Head: Head,
-	Body: Body,
-	Tail: Tail,
+pub struct Word {
+	Head: Option<Head>,
+	Body: Option<Body>,
+	Tail: Option<Tail>,
 }
