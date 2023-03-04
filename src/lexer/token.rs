@@ -1,6 +1,8 @@
 use std::{iter::Enumerate, slice::Iter};
 
-use nom::{InputIter, InputLength, InputTake, Needed};
+use nom::{
+	FindToken, InputIter, InputLength, InputTake, Needed, UnspecializedInput,
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token {
@@ -31,6 +33,12 @@ impl<'a> TokenStream<'a> {
 impl<'a> From<&'a [Token]> for TokenStream<'a> {
 	fn from(stream: &'a [Token]) -> Self {
 		Self { stream }
+	}
+}
+
+impl<'a> FindToken<&Token> for TokenStream<'a> {
+	fn find_token(&self, token: &Token) -> bool {
+		self.stream.contains(token)
 	}
 }
 
@@ -89,3 +97,5 @@ impl<'a> InputTake for TokenStream<'a> {
 		}
 	}
 }
+
+impl<'a> UnspecializedInput for TokenStream<'a> {}
