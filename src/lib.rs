@@ -1,4 +1,5 @@
 mod lexer;
+mod parser;
 
 use std::{iter::Peekable, str::Chars, vec::IntoIter};
 
