@@ -36,3 +36,6 @@ pub struct Word {
 	pub body: Option<Body>,
 	pub tail: Option<Tail>,
 }
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Comment(pub String);
