@@ -493,3 +493,72 @@ fn sentences1_must_fail_to_match_with_only_newlines() {
 		Err(Error::new(ts![], ErrorKind::Verify))
 	);
 }
+
+#[test]
+fn test_match_map_macro_invocation() {
+	fn parse_inc_and_dec_as_debug(
+		input: TokenStream,
+	) -> IResult<TokenStream, HeadTok> {
+		map_one(match_map! { Inc | Dec => HT::Debug })(input)
+	}
+
+	assert_eq!(
+		parse_inc_and_dec_as_debug(ts![Inc]).finish(),
+		Ok((ts![], HeadTok::Debug))
+	);
+
+	assert_eq!(
+		parse_inc_and_dec_as_debug(ts![Dec]).finish(),
+		Ok((ts![], HeadTok::Debug))
+	);
+
+	assert_eq!(
+		parse_inc_and_dec_as_debug(ts![Debug]).finish(),
+		Err(Error::new(
+			ts![Debug],
+			ErrorKind::MapOpt
+		))
+	);
+}
+
+#[test]
+fn test_parse_comment1() {
+	let code = ts![];
+
+	assert_eq!(
+		parse_comment(code).finish(),
+		Err(Error::new(ts![], ErrorKind::Eof))
+	)
+}
+
+#[test]
+fn test_parse_comment2() {
+	let code = ts![In];
+
+	assert_eq!(
+		parse_comment(code).finish(),
+		Err(Error::new(ts![In], ErrorKind::MapOpt))
+	)
+}
+
+#[test]
+fn test_parse_comment3() {
+	let sl = &[Token::Comment("".to_owned())][..];
+	let code = TokenStream::from(sl);
+
+	assert_eq!(
+		parse_comment(code).finish(),
+		Ok((ts![], ast::Comment("".to_owned())))
+	)
+}
+
+#[test]
+fn test_parse_comment4() {
+	let sl = &[Token::Comment("hello".to_owned())][..];
+	let code = TokenStream::from(sl);
+
+	assert_eq!(
+		parse_comment(code).finish(),
+		Ok((ts![], ast::Comment("hello".to_owned())))
+	)
+}
