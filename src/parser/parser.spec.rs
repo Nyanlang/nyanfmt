@@ -385,3 +385,111 @@ fn must_match_with_newline_separated_tokens() {
 		Ok((ts![], vec![ts![In], ts![In]]))
 	);
 }
+
+#[test]
+fn sentences0_must_match_with_empty_token_stream() {
+	let code = ts![];
+
+	assert_eq!(
+		parse_sentences0(code),
+		Ok((ts![], vec![]))
+	);
+}
+
+#[test]
+fn sentences0_must_recognize_single_word_as_single_sentence() {
+	let code = ts![In];
+
+	assert_eq!(
+		parse_sentences0(code),
+		Ok((ts![], vec![vec![word!(, [BT::In],)]]))
+	);
+}
+
+#[test]
+fn sentences0_must_recognize_many_words_as_single_sentence() {
+	let code = ts![In, JumpLeft, Debug, Out];
+
+	assert_eq!(
+		parse_sentences0(code),
+		Ok((
+			ts![],
+			vec![vec![
+				word!(, [BT::In, BT::JumpLeft],),
+				word!([HT::Debug], [BT::Out],),
+			]]
+		))
+	);
+}
+
+#[test]
+fn sentences0_must_recognize_many_words_separated_with_newlines_as_multiple_sentence(
+) {
+	let code = ts![In, NewLine, JumpLeft, In, Debug, NewLine, Out];
+
+	assert_eq!(
+		parse_sentences0(code),
+		Ok((
+			ts![],
+			vec![
+				vec![word!(, [BT::In, ],),],
+				vec![word!(, [BT::JumpLeft, BT::In],), word!([HT::Debug],,),],
+				vec![word!(, [BT::Out],)],
+			]
+		))
+	);
+}
+
+#[test]
+fn sentences0_must_ignore_trailing_newline() {
+	let code = ts![In, NewLine, JumpLeft, In, Debug, NewLine, Out, NewLine];
+
+	assert_eq!(
+		parse_sentences0(code),
+		Ok((
+			ts![],
+			vec![
+				vec![word!(, [BT::In, ],),],
+				vec![word!(, [BT::JumpLeft, BT::In],), word!([HT::Debug],,),],
+				vec![word!(, [BT::Out],)],
+			]
+		))
+	);
+}
+
+#[test]
+fn sentences0_must_ignore_leading_newline() {
+	let code = ts![NewLine, In, NewLine, JumpLeft, In, Debug, NewLine, Out];
+
+	assert_eq!(
+		parse_sentences0(code),
+		Ok((
+			ts![],
+			vec![
+				vec![word!(, [BT::In, ],),],
+				vec![word!(, [BT::JumpLeft, BT::In],), word!([HT::Debug],,),],
+				vec![word!(, [BT::Out],)],
+			]
+		))
+	);
+}
+
+#[test]
+fn sentences1_must_fail_to_match_with_empty_token_stream() {
+	let code = ts![];
+
+	assert_eq!(
+		parse_sentences1(code).finish(),
+		Err(Error::new(ts![], ErrorKind::Verify))
+	);
+}
+
+#[test]
+fn sentences1_must_fail_to_match_with_only_newlines() {
+	let code = ts![NewLine];
+
+	assert_eq!(
+		parse_sentences1(code).finish(),
+		Err(Error::new(ts![], ErrorKind::Verify))
+	);
+}

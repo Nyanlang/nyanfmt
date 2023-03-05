@@ -84,7 +84,7 @@ where
 fn parse_sentences0(
 	input: TokenStream,
 ) -> IResult<TokenStream, Vec<Vec<Word>>> {
-	many0(pad_newline(parse_words0))(input)
+	many0(pad_newline(parse_words1))(input)
 }
 
 fn parse_sentences1(
