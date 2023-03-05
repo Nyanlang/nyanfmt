@@ -81,6 +81,18 @@ where
 	)
 }
 
+fn parse_sentences0(
+	input: TokenStream,
+) -> IResult<TokenStream, Vec<Vec<Word>>> {
+	many0(pad_newline(parse_words0))(input)
+}
+
+fn parse_sentences1(
+	input: TokenStream,
+) -> IResult<TokenStream, Vec<Vec<Word>>> {
+	many1(pad_newline(parse_words1))(input)
+}
+
 #[cfg(test)]
 #[path = "parser.spec.rs"]
 mod tests;
