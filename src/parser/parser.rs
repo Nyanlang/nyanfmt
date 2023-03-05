@@ -1,13 +1,16 @@
-use super::ast::*;
-use crate::lexer::{Token::*, TokenStream};
+use super::ast::{self, *};
+use crate::lexer::{
+	Token::{self, *},
+	TokenStream,
+};
 use nom::{
 	branch::alt,
-	bytes::complete::tag,
-	combinator::{map, opt, verify},
-	error::{Error, ErrorKind, ParseError},
+	bytes::complete::{tag, take},
+	combinator::{map, map_opt, opt, verify},
+	error::{Error, ParseError},
 	multi::{many0, many1},
 	sequence::{delimited, tuple},
-	IResult, Parser,
+	IResult, InputIter, InputTake, Parser,
 };
 
 parse_token! { parse_inc: Inc => HeadTok::Inc => HeadTok }
@@ -91,6 +94,19 @@ fn parse_sentences1(
 	input: TokenStream,
 ) -> IResult<TokenStream, Vec<Vec<Word>>> {
 	many1(pad_newline(parse_words1))(input)
+}
+
+pub fn map_one<I, O, E, G>(f: G) -> impl FnOnce(I) -> IResult<I, O, E>
+where
+	G: FnMut(I) -> Option<O>,
+	I: InputIter + InputTake + Clone,
+	E: ParseError<I>,
+{
+	map_opt(take(1usize), f)
+}
+
+fn parse_comment(input: TokenStream) -> IResult<TokenStream, ast::Comment> {
+	map_one(match_map! { Token::Comment(s) => ast::Comment(s.clone()) })(input)
 }
 
 #[cfg(test)]
