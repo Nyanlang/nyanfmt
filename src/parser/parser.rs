@@ -109,6 +109,18 @@ fn parse_comment(input: TokenStream) -> IResult<TokenStream, ast::Comment> {
 	map_one(match_map! { Token::Comment(s) => ast::Comment(s.clone()) })(input)
 }
 
+fn parse_comments0(
+	input: TokenStream,
+) -> IResult<TokenStream, Vec<ast::Comment>> {
+	many0(parse_comment)(input)
+}
+
+fn parse_comments1(
+	input: TokenStream,
+) -> IResult<TokenStream, Vec<ast::Comment>> {
+	many1(parse_comment)(input)
+}
+
 #[cfg(test)]
 #[path = "parser.spec.rs"]
 mod tests;
