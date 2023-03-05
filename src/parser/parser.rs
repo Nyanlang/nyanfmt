@@ -2,10 +2,12 @@ use super::ast::*;
 use crate::lexer::{Token::*, TokenStream};
 use nom::{
 	branch::alt,
+	bytes::complete::tag,
 	combinator::{map, opt, verify},
+	error::{Error, ErrorKind, ParseError},
 	multi::{many0, many1},
-	sequence::tuple,
-	IResult,
+	sequence::{delimited, tuple},
+	IResult, Parser,
 };
 
 parse_token! { parse_inc: Inc => HeadTok::Inc => HeadTok }
@@ -64,6 +66,19 @@ fn parse_words0(input: TokenStream) -> IResult<TokenStream, Vec<Word>> {
 
 fn parse_words1(input: TokenStream) -> IResult<TokenStream, Vec<Word>> {
 	many1(parse_word)(input)
+}
+
+fn pad_newline<'a, O, F>(
+	parser: F,
+) -> impl FnMut(TokenStream<'a>) -> IResult<TokenStream<'a>, O>
+where
+	F: Parser<TokenStream<'a>, O, Error<TokenStream<'a>>>,
+{
+	delimited(
+		opt(tag(&NewLine)),
+		parser,
+		opt(tag(&NewLine)),
+	)
 }
 
 #[cfg(test)]
