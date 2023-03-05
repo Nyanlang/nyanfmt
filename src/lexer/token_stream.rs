@@ -18,7 +18,7 @@ impl<'a> TokenStream<'a> {
 
 impl<'a, T> From<T> for TokenStream<'a>
 where
-	&'a [Token]: From<T>,
+	T: Into<&'a [Token]>,
 {
 	fn from(stream: T) -> Self {
 		Self {
