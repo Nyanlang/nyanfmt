@@ -8,3 +8,12 @@ macro_rules! parse_token {
 		}
 	};
 }
+
+macro_rules! match_map {
+    ($pat: pat $(if $guard: expr)? => $map: expr) => {
+        |o: TokenStream| match o.iter_elements().next()? {
+            $pat $(if $guard)? => Some($map),
+            _ => None,
+        }
+    };
+}
