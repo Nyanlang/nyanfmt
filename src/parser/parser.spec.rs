@@ -1,6 +1,8 @@
 use super::*;
 use nom::{
+	combinator::eof,
 	error::{Error, ErrorKind},
+	sequence::terminated,
 	Finish,
 };
 use pretty_assertions::assert_eq;
@@ -306,5 +308,80 @@ fn test_parse_words1_with_empty_input() {
 			TokenStream::new(),
 			ErrorKind::Verify
 		))
+	);
+}
+
+#[test]
+fn must_match_without_any_newlines() {
+	let code = ts![Debug, Left];
+
+	assert_eq!(
+		pad_newline(tag(&Debug))(code),
+		Ok((ts![Left], ts![Debug])),
+	);
+}
+
+#[test]
+fn must_match_with_newline_at_the_left() {
+	let code = ts![NewLine, Debug, Left];
+
+	assert_eq!(
+		pad_newline(tag(&Debug))(code),
+		Ok((ts![Left], ts![Debug])),
+	);
+}
+
+#[test]
+fn must_match_with_newline_at_the_right() {
+	let code = ts![Debug, NewLine, Left];
+
+	assert_eq!(
+		pad_newline(tag(&Debug))(code),
+		Ok((ts![Left], ts![Debug])),
+	);
+}
+
+#[test]
+fn must_match_newlines_at_both_side() {
+	let code = ts![NewLine, Debug, NewLine, Left];
+
+	assert_eq!(
+		pad_newline(tag(&Debug))(code),
+		Ok((ts![Left], ts![Debug])),
+	);
+}
+
+#[test]
+fn must_fail_if_inner_parser_fails() {
+	let code = ts![NewLine, NewLine, Left];
+
+	assert_eq!(
+		pad_newline(tag(&Debug))(code).finish(),
+		Err(Error::new(
+			ts![NewLine, Left],
+			ErrorKind::Tag
+		)),
+	);
+}
+
+#[test]
+fn newlines_should_not_be_repeated() {
+	let code = ts![
+		NewLine, NewLine, In, NewLine, NewLine, NewLine, NewLine, In, NewLine
+	];
+
+	assert_eq!(
+		terminated(many0(pad_newline(tag(&In))), eof)(code.clone()).finish(),
+		Err(Error::new(code, ErrorKind::Eof)),
+	);
+}
+
+#[test]
+fn must_match_with_newline_separated_tokens() {
+	let code = ts![NewLine, In, NewLine, NewLine, In, NewLine];
+
+	assert_eq!(
+		terminated(many0(pad_newline(tag(&In))), eof)(code.clone()).finish(),
+		Ok((ts![], vec![ts![In], ts![In]]))
 	);
 }
