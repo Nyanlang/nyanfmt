@@ -1,4 +1,5 @@
-struct Root;
+#[derive(Clone, Debug, PartialEq)]
+pub struct Root(pub Code);
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum HeadTok {
@@ -45,3 +46,10 @@ pub struct Comment(pub String);
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Paragraph(pub Vec<Comment>, pub Vec<Sentence>);
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Code {
+	pub leading_sentences: Vec<Sentence>,
+	pub paragraphs: Vec<Paragraph>,
+	pub trailing_comments: Vec<Comment>,
+}

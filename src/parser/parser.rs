@@ -6,10 +6,10 @@ use crate::lexer::{
 use nom::{
 	branch::alt,
 	bytes::complete::{tag, take},
-	combinator::{map, map_opt, opt, verify},
+	combinator::{eof, map, map_opt, opt, verify},
 	error::{Error, ParseError},
 	multi::{many0, many1},
-	sequence::{delimited, pair, tuple},
+	sequence::{delimited, pair, terminated, tuple},
 	IResult, InputIter, InputTake, Parser,
 };
 
@@ -122,6 +122,25 @@ fn parse_paragraph(input: TokenStream) -> IResult<TokenStream, Paragraph> {
 		pair(parse_comments1, parse_sentences1),
 		|(c, s)| Paragraph(c, s),
 	)(input)
+}
+
+fn parse_code(input: TokenStream) -> IResult<TokenStream, Code> {
+	map(
+		tuple((
+			parse_sentences0,
+			many0(parse_paragraph),
+			parse_comments0,
+		)),
+		|(leading_sentences, paragraphs, trailing_comments)| Code {
+			leading_sentences,
+			paragraphs,
+			trailing_comments,
+		},
+	)(input)
+}
+
+fn parse_root(input: TokenStream) -> IResult<TokenStream, Root> {
+	map(terminated(parse_code, eof), Root)(input)
 }
 
 #[cfg(test)]
