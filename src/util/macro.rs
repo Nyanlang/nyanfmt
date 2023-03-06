@@ -30,3 +30,9 @@ macro_rules! word {
         }
     };
 }
+
+macro_rules! sentence {
+    ($($word: expr),* $(,)?) => {
+        Sentence(vec![$($word),*])
+    };
+}

@@ -63,12 +63,12 @@ fn parse_word(input: TokenStream) -> IResult<TokenStream, Word> {
 	)(input)
 }
 
-fn parse_words0(input: TokenStream) -> IResult<TokenStream, Vec<Word>> {
-	many0(parse_word)(input)
+fn parse_words0(input: TokenStream) -> IResult<TokenStream, Sentence> {
+	map(many0(parse_word), Sentence)(input)
 }
 
-fn parse_words1(input: TokenStream) -> IResult<TokenStream, Vec<Word>> {
-	many1(parse_word)(input)
+fn parse_words1(input: TokenStream) -> IResult<TokenStream, Sentence> {
+	map(many1(parse_word), Sentence)(input)
 }
 
 fn pad_newline<'a, O, F>(
@@ -84,15 +84,11 @@ where
 	)
 }
 
-fn parse_sentences0(
-	input: TokenStream,
-) -> IResult<TokenStream, Vec<Vec<Word>>> {
+fn parse_sentences0(input: TokenStream) -> IResult<TokenStream, Vec<Sentence>> {
 	many0(pad_newline(parse_words1))(input)
 }
 
-fn parse_sentences1(
-	input: TokenStream,
-) -> IResult<TokenStream, Vec<Vec<Word>>> {
+fn parse_sentences1(input: TokenStream) -> IResult<TokenStream, Vec<Sentence>> {
 	many1(pad_newline(parse_words1))(input)
 }
 

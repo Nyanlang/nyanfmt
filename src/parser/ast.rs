@@ -38,4 +38,7 @@ pub struct Word {
 }
 
 #[derive(Clone, Debug, PartialEq)]
+pub struct Sentence(pub Vec<Word>);
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct Comment(pub String);

@@ -245,7 +245,7 @@ fn test_parse_words0() {
 		parse_words0(code),
 		Ok((
 			TokenStream::new(),
-			vec![
+			sentence![
 				word!(
 					[HT::Inc, HT::Dec],
 					[BT::Out, BT::In],
@@ -267,7 +267,7 @@ fn test_parse_words0_with_empty_input() {
 
 	assert_eq!(
 		parse_words0(code),
-		Ok((TokenStream::new(), vec![]))
+		Ok((TokenStream::new(), sentence![]))
 	)
 }
 
@@ -282,7 +282,7 @@ fn test_parse_words1() {
 		parse_words1(code),
 		Ok((
 			TokenStream::new(),
-			vec![
+			sentence![
 				word!(
 					[HT::Inc, HT::Dec],
 					[BT::Out, BT::In],
@@ -402,7 +402,10 @@ fn sentences0_must_recognize_single_word_as_single_sentence() {
 
 	assert_eq!(
 		parse_sentences0(code),
-		Ok((ts![], vec![vec![word!(, [BT::In],)]]))
+		Ok((
+			ts![],
+			vec![sentence![word!(, [BT::In],)]]
+		))
 	);
 }
 
@@ -414,7 +417,7 @@ fn sentences0_must_recognize_many_words_as_single_sentence() {
 		parse_sentences0(code),
 		Ok((
 			ts![],
-			vec![vec![
+			vec![sentence![
 				word!(, [BT::In, BT::JumpLeft],),
 				word!([HT::Debug], [BT::Out],),
 			]]
@@ -432,9 +435,12 @@ fn sentences0_must_recognize_many_words_separated_with_newlines_as_multiple_sent
 		Ok((
 			ts![],
 			vec![
-				vec![word!(, [BT::In, ],),],
-				vec![word!(, [BT::JumpLeft, BT::In],), word!([HT::Debug],,),],
-				vec![word!(, [BT::Out],)],
+				sentence![word!(, [BT::In, ],),],
+				sentence![
+					word!(, [BT::JumpLeft, BT::In],),
+					word!([HT::Debug],,),
+				],
+				sentence![word!(, [BT::Out],)],
 			]
 		))
 	);
@@ -449,9 +455,12 @@ fn sentences0_must_ignore_trailing_newline() {
 		Ok((
 			ts![],
 			vec![
-				vec![word!(, [BT::In, ],),],
-				vec![word!(, [BT::JumpLeft, BT::In],), word!([HT::Debug],,),],
-				vec![word!(, [BT::Out],)],
+				sentence![word!(, [BT::In, ],),],
+				sentence![
+					word!(, [BT::JumpLeft, BT::In],),
+					word!([HT::Debug],,),
+				],
+				sentence![word!(, [BT::Out],)],
 			]
 		))
 	);
@@ -466,9 +475,12 @@ fn sentences0_must_ignore_leading_newline() {
 		Ok((
 			ts![],
 			vec![
-				vec![word!(, [BT::In, ],),],
-				vec![word!(, [BT::JumpLeft, BT::In],), word!([HT::Debug],,),],
-				vec![word!(, [BT::Out],)],
+				sentence![word!(, [BT::In, ],),],
+				sentence![
+					word!(, [BT::JumpLeft, BT::In],),
+					word!([HT::Debug],,),
+				],
+				sentence![word!(, [BT::Out],)],
 			]
 		))
 	);
