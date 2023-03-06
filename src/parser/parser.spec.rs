@@ -562,3 +562,69 @@ fn test_parse_comment4() {
 		Ok((ts![], ast::Comment("hello".to_owned())))
 	)
 }
+
+#[test]
+fn parse_comments0_must_match_with_empty_token_stream() {
+	let code = ts![];
+
+	assert_eq!(
+		parse_comments0(code),
+		Ok((ts![], vec![]))
+	)
+}
+
+#[test]
+fn parse_comments0_must_match_with_many_consequent_comments() {
+	let sl = &[
+		Token::Comment("co".to_owned()),
+		Token::Comment("mm".to_owned()),
+		Token::Comment("ents".to_owned()),
+		JumpLeft,
+	][..];
+	let code = TokenStream::from(sl);
+
+	assert_eq!(
+		parse_comments0(code),
+		Ok((
+			ts![JumpLeft],
+			vec![
+				ast::Comment("co".to_owned()),
+				ast::Comment("mm".to_owned()),
+				ast::Comment("ents".to_owned()),
+			]
+		))
+	)
+}
+
+#[test]
+fn parse_comments1_must_not_match_with_empty_token_stream() {
+	let code = ts![];
+
+	assert_eq!(
+		parse_comments1(code).finish(),
+		Err(Error::new(ts![], ErrorKind::Eof))
+	)
+}
+
+#[test]
+fn parse_comments1_must_match_with_many_consequent_comments() {
+	let sl = &[
+		Token::Comment("co".to_owned()),
+		Token::Comment("mm".to_owned()),
+		Token::Comment("ents".to_owned()),
+		JumpLeft,
+	][..];
+	let code = TokenStream::from(sl);
+
+	assert_eq!(
+		parse_comments1(code),
+		Ok((
+			ts![JumpLeft],
+			vec![
+				ast::Comment("co".to_owned()),
+				ast::Comment("mm".to_owned()),
+				ast::Comment("ents".to_owned()),
+			]
+		))
+	)
+}
