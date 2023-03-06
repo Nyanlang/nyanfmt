@@ -17,13 +17,6 @@ macro_rules! head_option {
 }
 
 macro_rules! word {
-    () => {
-        Word {
-            head: None,
-            body: None,
-            tail: None,
-        }
-    };
     (
         $([$($head: expr),* $(,)?])?,
         $([$($body: expr),* $(,)?])?,
