@@ -9,7 +9,7 @@ use nom::{
 	combinator::{map, map_opt, opt, verify},
 	error::{Error, ParseError},
 	multi::{many0, many1},
-	sequence::{delimited, tuple},
+	sequence::{delimited, pair, tuple},
 	IResult, InputIter, InputTake, Parser,
 };
 
@@ -115,6 +115,13 @@ fn parse_comments1(
 	input: TokenStream,
 ) -> IResult<TokenStream, Vec<ast::Comment>> {
 	many1(parse_comment)(input)
+}
+
+fn parse_paragraph(input: TokenStream) -> IResult<TokenStream, Paragraph> {
+	map(
+		pair(parse_comments1, parse_sentences1),
+		|(c, s)| Paragraph(c, s),
+	)(input)
 }
 
 #[cfg(test)]
