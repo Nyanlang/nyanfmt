@@ -3,7 +3,7 @@ use nom::{
 	combinator::eof,
 	error::{Error, ErrorKind},
 	sequence::terminated,
-	Finish,
+	Err, Finish,
 };
 use pretty_assertions::assert_eq;
 
@@ -637,6 +637,57 @@ fn parse_comments1_must_match_with_many_consequent_comments() {
 				ast::Comment("mm".to_owned()),
 				ast::Comment("ents".to_owned()),
 			]
+		))
+	)
+}
+
+#[test]
+fn parse_paragraph_must_not_match_with_empty_token_stream() {
+	let code = ts![];
+
+	assert_eq!(
+		parse_paragraph(code).finish(),
+		Err(Error::new(ts![], ErrorKind::Eof))
+	)
+}
+
+#[test]
+fn parse_paragraph_must_not_match_with_single_comment() {
+	let sl = &[Token::Comment("co".to_owned())][..];
+	let code = TokenStream::from(sl);
+
+	assert_eq!(
+		parse_paragraph(code).finish(),
+		Err(Error::new(ts![], ErrorKind::Verify))
+	)
+}
+
+#[test]
+fn parse_paragraph_must_not_match_with_single_sentence() {
+	let code = ts![JumpLeft];
+
+	assert_eq!(
+		parse_paragraph(code).finish(),
+		Err(Error::new(
+			ts![JumpLeft],
+			ErrorKind::MapOpt
+		))
+	)
+}
+
+#[test]
+fn parse_paragraph_must_match_with_comment_and_sentence() {
+	let sl = &[Token::Comment("co".to_owned()), JumpLeft][..];
+	let code = TokenStream::from(sl);
+
+	assert_eq!(
+		parse_paragraph(code).finish(),
+		Ok((
+			ts![],
+			Paragraph(
+				vec![ast::Comment("co".to_owned())],
+				vec![sentence![word!(, [BT::JumpLeft],)]]
+			)
 		))
 	)
 }
