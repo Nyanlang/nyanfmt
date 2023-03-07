@@ -146,6 +146,41 @@ impl Display for Paragraph {
 	}
 }
 
+impl Display for Code {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		let mut l = self
+			.leading_sentences
+			.iter()
+			.map(|i| format!("{i}"))
+			.collect::<Vec<_>>()
+			.join("\n");
+		let mut p = self
+			.paragraphs
+			.iter()
+			.map(|i| format!("{i}"))
+			.collect::<Vec<_>>()
+			.join("\n\n");
+		let t = self
+			.trailing_comments
+			.iter()
+			.map(|i| format!("{i}"))
+			.collect::<Vec<_>>()
+			.join("\n");
+
+		match (l.len(), p.len(), t.len()) {
+			(1.., 1.., 1..) => {
+				l.push('\n');
+				p.push('\n');
+			},
+			(1.., 1.., _) | (1.., _, 1..) => l.push('\n'),
+			(_, 1.., 1..) => p.push('\n'),
+			_ => {},
+		}
+
+		write!(f, "{}{}{}", l, p, t)
+	}
+}
+
 #[cfg(test)]
 #[path = "format.spec.rs"]
 mod tests;
