@@ -47,3 +47,24 @@ fn format_tail() {
 
 	assert_eq!(ast.to_string(), "?!??!!!??");
 }
+
+#[test]
+fn format_word() {
+	let ast = word!(
+		[HeadTok::Inc, HeadTok::Debug],
+		[
+			BodyTok::JumpRight,
+			BodyTok::In,
+			BodyTok::Out,
+			BodyTok::JumpLeft,
+		],
+		[
+			TailTok::Right,
+			TailTok::Left,
+			TailTok::Right,
+			TailTok::Right,
+		]
+	);
+
+	assert_eq!(ast.to_string(), "냥뀨~,.-?!??");
+}

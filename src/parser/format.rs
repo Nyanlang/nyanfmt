@@ -86,6 +86,27 @@ impl Display for Tail {
 	}
 }
 
+impl Display for Word {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(
+			f,
+			"{}{}{}",
+			self.head
+				.as_ref()
+				.map(|v| format!("{v}"))
+				.unwrap_or_default(),
+			self.body
+				.as_ref()
+				.map(|v| format!("{v}"))
+				.unwrap_or_default(),
+			self.tail
+				.as_ref()
+				.map(|v| format!("{v}"))
+				.unwrap_or_default(),
+		)
+	}
+}
+
 #[cfg(test)]
 #[path = "format.spec.rs"]
 mod tests;
