@@ -85,3 +85,7 @@ impl Display for Tail {
 		)
 	}
 }
+
+#[cfg(test)]
+#[path = "format.spec.rs"]
+mod tests;
