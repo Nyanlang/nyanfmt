@@ -127,6 +127,25 @@ impl Display for Comment {
 	}
 }
 
+impl Display for Paragraph {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(
+			f,
+			"{}\n{}",
+			self.0
+				.iter()
+				.map(|i| format!("{i}"))
+				.collect::<Vec<_>>()
+				.join("\n"),
+			self.1
+				.iter()
+				.map(|i| format!("{i}"))
+				.collect::<Vec<_>>()
+				.join("\n"),
+		)
+	}
+}
+
 #[cfg(test)]
 #[path = "format.spec.rs"]
 mod tests;
