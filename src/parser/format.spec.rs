@@ -96,3 +96,10 @@ fn format_sentence() {
 		"냥,.?? 냐냥- ~~,!? 뀨? .~"
 	)
 }
+
+#[test]
+fn format_comment() {
+	let ast = Comment("hello".to_owned());
+
+	assert_eq!(ast.to_string(), r#""hello""#);
+}

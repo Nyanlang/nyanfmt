@@ -121,6 +121,12 @@ impl Display for Sentence {
 	}
 }
 
+impl Display for Comment {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(f, r#""{}""#, self.0)
+	}
+}
+
 #[cfg(test)]
 #[path = "format.spec.rs"]
 mod tests;
