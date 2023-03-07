@@ -107,6 +107,20 @@ impl Display for Word {
 	}
 }
 
+impl Display for Sentence {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(
+			f,
+			"{}",
+			self.0
+				.iter()
+				.map(|i| format!("{i}"))
+				.collect::<Vec<_>>()
+				.join(" ")
+		)
+	}
+}
+
 #[cfg(test)]
 #[path = "format.spec.rs"]
 mod tests;

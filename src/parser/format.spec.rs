@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn format_head() {
@@ -67,4 +68,31 @@ fn format_word() {
 	);
 
 	assert_eq!(ast.to_string(), "냥뀨~,.-?!??");
+}
+
+#[test]
+fn format_sentence() {
+	let ast = sentence![
+		word!(
+			[HeadTok::Inc],
+			[BodyTok::In, BodyTok::Out],
+			[TailTok::Right, TailTok::Right],
+		),
+		word!(
+			[HeadTok::Dec, HeadTok::Inc],
+			[BodyTok::JumpLeft],
+		),
+		word!(, [
+            BodyTok::JumpRight,
+            BodyTok::JumpRight,
+            BodyTok::In,
+        ], [TailTok::Left, TailTok::Right]),
+		word!([HeadTok::Debug],, [TailTok::Right]),
+		word!(, [BodyTok::Out, BodyTok::JumpRight],),
+	];
+
+	assert_eq!(
+		ast.to_string(),
+		"냥,.?? 냐냥- ~~,!? 뀨? .~"
+	)
 }
