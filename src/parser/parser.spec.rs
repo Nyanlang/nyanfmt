@@ -1034,3 +1034,69 @@ fn parse_code_must_match_with_s_s() {
 		))
 	)
 }
+
+#[test]
+fn parse_root_must_match_with_empty_token_stream() {
+	let code = ts![];
+
+	assert_eq!(
+		parse_root(code),
+		Ok((
+			ts![],
+			Root(Code {
+				leading_sentences: vec![],
+				paragraphs: vec![],
+				trailing_comments: vec![]
+			})
+		))
+	)
+}
+
+#[test]
+fn test_parse_root() {
+	let sl = &[
+		JumpLeft,
+		Token::Comment("co".to_owned()),
+		Token::Comment("mm".to_owned()),
+		In,
+		NewLine,
+		Right,
+		Token::Comment("en".to_owned()),
+		Debug,
+		Out,
+		NewLine,
+		JumpRight,
+		Token::Comment("ts".to_owned()),
+	][..];
+	let code = TokenStream::from(sl);
+
+	assert_eq!(
+		parse_root(code),
+		Ok((
+			ts![],
+			Root(Code {
+				leading_sentences: vec![sentence![word!(, [BT::JumpLeft],)]],
+				paragraphs: vec![
+					Paragraph(
+						vec![
+							ast::Comment("co".to_owned()),
+							ast::Comment("mm".to_owned()),
+						],
+						vec![
+							sentence![word!(, [BT::In],)],
+							sentence![word!(,, [TT::Right]),],
+						]
+					),
+					Paragraph(
+						vec![ast::Comment("en".to_owned()),],
+						vec![
+							sentence![word!([HT::Debug], [BT::Out],)],
+							sentence![word!(, [BT::JumpRight],)],
+						],
+					),
+				],
+				trailing_comments: vec![ast::Comment("ts".to_owned())],
+			})
+		))
+	)
+}
