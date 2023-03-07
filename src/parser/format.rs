@@ -43,3 +43,45 @@ impl Display for TailTok {
 		)
 	}
 }
+
+impl Display for Head {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(
+			f,
+			"{}",
+			self.0
+				.iter()
+				.map(|i| format!("{i}"))
+				.collect::<Vec<_>>()
+				.join("")
+		)
+	}
+}
+
+impl Display for Body {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(
+			f,
+			"{}",
+			self.0
+				.iter()
+				.map(|i| format!("{i}"))
+				.collect::<Vec<_>>()
+				.join("")
+		)
+	}
+}
+
+impl Display for Tail {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		write!(
+			f,
+			"{}",
+			self.0
+				.iter()
+				.map(|i| format!("{i}"))
+				.collect::<Vec<_>>()
+				.join("")
+		)
+	}
+}
