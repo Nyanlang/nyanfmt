@@ -1,4 +1,5 @@
 use super::*;
+use indoc::indoc;
 use pretty_assertions::assert_eq;
 
 #[test]
@@ -102,4 +103,116 @@ fn format_comment() {
 	let ast = Comment("hello".to_owned());
 
 	assert_eq!(ast.to_string(), r#""hello""#);
+}
+
+#[test]
+fn format_paragraph_with_single_comment_and_single_sentence() {
+	let ast = Paragraph(
+		vec![Comment("comment".to_owned())],
+		vec![sentence![word!([HeadTok::Inc],,)]],
+	);
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            "comment"
+            냥"#
+		}
+	);
+}
+
+#[test]
+fn format_paragraph_with_multiple_comment_and_single_sentence() {
+	let ast = Paragraph(
+		vec![
+			Comment("this".to_owned()),
+			Comment("is".to_owned()),
+			Comment("very".to_owned()),
+			Comment("long".to_owned()),
+			Comment("comment".to_owned()),
+		],
+		vec![sentence![word!([HeadTok::Inc],,)]],
+	);
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            "this"
+            "is"
+            "very"
+            "long"
+            "comment"
+            냥"#
+		}
+	);
+}
+
+#[test]
+fn format_paragraph_with_single_comment_and_multiple_sentence() {
+	let ast = Paragraph(
+		vec![Comment("comment".to_owned())],
+		vec![
+			sentence![
+				word!([HeadTok::Inc],,[TailTok::Right]),
+				word!(, [BodyTok::JumpRight],)
+			],
+			sentence![word!([HeadTok::Inc],, [TailTok::Left])],
+			sentence![
+				word!([HeadTok::Dec], [BodyTok::In],),
+				word!([HeadTok::Inc],,)
+			],
+			sentence![word!([HeadTok::Dec],,)],
+		],
+	);
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            "comment"
+            냥? ~
+            냥!
+            냐, 냥
+            냐"#
+		}
+	);
+}
+
+#[test]
+fn format_paragraph_with_multiple_comment_and_multiple_sentence() {
+	let ast = Paragraph(
+		vec![
+			Comment("this".to_owned()),
+			Comment("is".to_owned()),
+			Comment("very".to_owned()),
+			Comment("long".to_owned()),
+			Comment("comment".to_owned()),
+		],
+		vec![
+			sentence![
+				word!([HeadTok::Inc],,[TailTok::Right]),
+				word!(, [BodyTok::JumpRight],)
+			],
+			sentence![word!([HeadTok::Inc],, [TailTok::Left])],
+			sentence![
+				word!([HeadTok::Dec], [BodyTok::In],),
+				word!([HeadTok::Inc],,)
+			],
+			sentence![word!([HeadTok::Dec],,)],
+		],
+	);
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            "this"
+            "is"
+            "very"
+            "long"
+            "comment"
+            냥? ~
+            냥!
+            냐, 냥
+            냐"#
+		}
+	);
 }
