@@ -634,3 +634,30 @@ fn format_code_full() {
 		}
 	);
 }
+
+#[test]
+fn root_must_emit_nothing_if_given_code_is_empty() {
+	let code = Root(Code {
+		leading_sentences: vec![],
+		paragraphs: vec![],
+		trailing_comments: vec![],
+	});
+
+	assert_eq!(code.to_string(), "");
+}
+
+#[test]
+fn root_must_add_trailing_newline_character_if_code_is_not_empty() {
+	let code = Root(Code {
+		leading_sentences: vec![],
+		paragraphs: vec![],
+		trailing_comments: vec![Comment(".".to_owned())],
+	});
+
+	assert_eq!(
+		code.to_string(),
+		indoc! {r#"
+            "."
+        "#}
+	)
+}
