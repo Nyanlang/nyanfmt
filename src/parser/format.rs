@@ -1,4 +1,7 @@
-use std::fmt::{self, Display, Formatter};
+use std::{
+	fmt::{self, Display, Formatter},
+	ops::Not,
+};
 
 use super::ast::*;
 
@@ -188,7 +191,10 @@ impl Display for Root {
 		write!(
 			f,
 			"{res}{}",
-			if res.len() > 0 { "\n" } else { "" }
+			res.is_empty()
+				.not()
+				.then_some("\n")
+				.unwrap_or_default()
 		)
 	}
 }

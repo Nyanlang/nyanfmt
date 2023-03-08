@@ -10,3 +10,4 @@ clap = { version = "4.1.8", features = ["derive"] }
 indoc = "2.0.0"
 nom = "7.1.3"
 pretty_assertions = "1.3.0"
+str-macro = "1.0.0"

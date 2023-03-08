@@ -1,6 +1,7 @@
 use super::*;
 use indoc::indoc;
 use pretty_assertions::assert_eq;
+use str_macro::str as s;
 
 #[test]
 fn format_head() {
@@ -100,7 +101,7 @@ fn format_sentence() {
 
 #[test]
 fn format_comment() {
-	let ast = Comment("hello".to_owned());
+	let ast = Comment(s!("hello"));
 
 	assert_eq!(ast.to_string(), r#""hello""#);
 }
@@ -108,7 +109,7 @@ fn format_comment() {
 #[test]
 fn format_paragraph_with_single_comment_and_single_sentence() {
 	let ast = Paragraph(
-		vec![Comment("comment".to_owned())],
+		vec![Comment(s!("comment"))],
 		vec![sentence![word!([HeadTok::Inc],,)]],
 	);
 
@@ -125,11 +126,11 @@ fn format_paragraph_with_single_comment_and_single_sentence() {
 fn format_paragraph_with_multiple_comment_and_single_sentence() {
 	let ast = Paragraph(
 		vec![
-			Comment("this".to_owned()),
-			Comment("is".to_owned()),
-			Comment("very".to_owned()),
-			Comment("long".to_owned()),
-			Comment("comment".to_owned()),
+			Comment(s!("this")),
+			Comment(s!("is")),
+			Comment(s!("very")),
+			Comment(s!("long")),
+			Comment(s!("comment")),
 		],
 		vec![sentence![word!([HeadTok::Inc],,)]],
 	);
@@ -150,7 +151,7 @@ fn format_paragraph_with_multiple_comment_and_single_sentence() {
 #[test]
 fn format_paragraph_with_single_comment_and_multiple_sentence() {
 	let ast = Paragraph(
-		vec![Comment("comment".to_owned())],
+		vec![Comment(s!("comment"))],
 		vec![
 			sentence![
 				word!([HeadTok::Inc],,[TailTok::Right]),
@@ -181,11 +182,11 @@ fn format_paragraph_with_single_comment_and_multiple_sentence() {
 fn format_paragraph_with_multiple_comment_and_multiple_sentence() {
 	let ast = Paragraph(
 		vec![
-			Comment("this".to_owned()),
-			Comment("is".to_owned()),
-			Comment("very".to_owned()),
-			Comment("long".to_owned()),
-			Comment("comment".to_owned()),
+			Comment(s!("this")),
+			Comment(s!("is")),
+			Comment(s!("very")),
+			Comment(s!("long")),
+			Comment(s!("comment")),
 		],
 		vec![
 			sentence![
@@ -263,10 +264,10 @@ fn format_code_with_only_trailing_comments() {
 		leading_sentences: vec![],
 		paragraphs: vec![],
 		trailing_comments: vec![
-			Comment("this is".to_owned()),
-			Comment("very long and".to_owned()),
-			Comment("newline delimited".to_owned()),
-			Comment("comment!".to_owned()),
+			Comment(s!("this is")),
+			Comment(s!("very long and")),
+			Comment(s!("newline delimited")),
+			Comment(s!("comment!")),
 		],
 	};
 
@@ -288,9 +289,9 @@ fn format_code_with_paragraphs() {
 		paragraphs: vec![
 			Paragraph(
 				vec![
-					Comment("this".to_owned()),
-					Comment("is".to_owned()),
-					Comment("comment".to_owned()),
+					Comment(s!("this")),
+					Comment(s!("is")),
+					Comment(s!("comment")),
 				],
 				vec![
 					sentence![
@@ -324,7 +325,7 @@ fn format_code_with_paragraphs() {
 				],
 			),
 			Paragraph(
-				vec![Comment("comment2".to_owned())],
+				vec![Comment(s!("comment2"))],
 				vec![
 					sentence![word!(
 						[HeadTok::Inc, HeadTok::Debug],
@@ -376,9 +377,9 @@ fn format_code_with_paragraphs_and_leading_sentences() {
 		paragraphs: vec![
 			Paragraph(
 				vec![
-					Comment("this".to_owned()),
-					Comment("is".to_owned()),
-					Comment("comment".to_owned()),
+					Comment(s!("this")),
+					Comment(s!("is")),
+					Comment(s!("comment")),
 				],
 				vec![
 					sentence![
@@ -412,7 +413,7 @@ fn format_code_with_paragraphs_and_leading_sentences() {
 				],
 			),
 			Paragraph(
-				vec![Comment("comment2".to_owned())],
+				vec![Comment(s!("comment2"))],
 				vec![
 					sentence![word!(
 						[HeadTok::Inc, HeadTok::Debug],
@@ -455,9 +456,9 @@ fn format_code_with_paragraphs_and_trailing_comments() {
 		paragraphs: vec![
 			Paragraph(
 				vec![
-					Comment("this".to_owned()),
-					Comment("is".to_owned()),
-					Comment("comment".to_owned()),
+					Comment(s!("this")),
+					Comment(s!("is")),
+					Comment(s!("comment")),
 				],
 				vec![
 					sentence![
@@ -491,7 +492,7 @@ fn format_code_with_paragraphs_and_trailing_comments() {
 				],
 			),
 			Paragraph(
-				vec![Comment("comment2".to_owned())],
+				vec![Comment(s!("comment2"))],
 				vec![
 					sentence![word!(
 						[HeadTok::Inc, HeadTok::Debug],
@@ -506,10 +507,10 @@ fn format_code_with_paragraphs_and_trailing_comments() {
 			),
 		],
 		trailing_comments: vec![
-			Comment("this is".to_owned()),
-			Comment("very long and".to_owned()),
-			Comment("newline delimited".to_owned()),
-			Comment("comment!".to_owned()),
+			Comment(s!("this is")),
+			Comment(s!("very long and")),
+			Comment(s!("newline delimited")),
+			Comment(s!("comment!")),
 		],
 	};
 
@@ -553,9 +554,9 @@ fn format_code_full() {
 		paragraphs: vec![
 			Paragraph(
 				vec![
-					Comment("this".to_owned()),
-					Comment("is".to_owned()),
-					Comment("comment".to_owned()),
+					Comment(s!("this")),
+					Comment(s!("is")),
+					Comment(s!("comment")),
 				],
 				vec![
 					sentence![
@@ -589,7 +590,7 @@ fn format_code_full() {
 				],
 			),
 			Paragraph(
-				vec![Comment("comment2".to_owned())],
+				vec![Comment(s!("comment2"))],
 				vec![
 					sentence![word!(
 						[HeadTok::Inc, HeadTok::Debug],
@@ -604,10 +605,10 @@ fn format_code_full() {
 			),
 		],
 		trailing_comments: vec![
-			Comment("this is".to_owned()),
-			Comment("very long and".to_owned()),
-			Comment("newline delimited".to_owned()),
-			Comment("comment!".to_owned()),
+			Comment(s!("this is")),
+			Comment(s!("very long and")),
+			Comment(s!("newline delimited")),
+			Comment(s!("comment!")),
 		],
 	};
 
@@ -651,7 +652,7 @@ fn root_must_add_trailing_newline_character_if_code_is_not_empty() {
 	let code = Root(Code {
 		leading_sentences: vec![],
 		paragraphs: vec![],
-		trailing_comments: vec![Comment(".".to_owned())],
+		trailing_comments: vec![Comment(s!("."))],
 	});
 
 	assert_eq!(

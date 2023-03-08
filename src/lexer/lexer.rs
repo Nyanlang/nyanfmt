@@ -8,6 +8,7 @@ use nom::{
 	sequence::{delimited, terminated},
 	Finish, IResult,
 };
+use str_macro::str as s;
 
 use super::Token;
 
@@ -24,7 +25,7 @@ char_token! { lex_debug: '뀨' -> Token::Debug }
 fn lex_comment(input: &str) -> IResult<&str, Token> {
 	map(
 		delimited(char('"'), take_until(r#"""#), char('"')),
-		|o: &str| Token::Comment(o.to_owned()),
+		|o: &str| Token::Comment(s!(o)),
 	)(input)
 }
 

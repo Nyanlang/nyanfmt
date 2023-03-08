@@ -1,5 +1,4 @@
 use super::*;
-use indoc::indoc;
 use nom::{
 	combinator::eof,
 	error::{Error, ErrorKind},
@@ -7,6 +6,7 @@ use nom::{
 	Finish,
 };
 use pretty_assertions::assert_eq;
+use str_macro::str as s;
 
 type HT = HeadTok;
 type BT = BodyTok;
@@ -556,23 +556,23 @@ fn test_parse_comment2() {
 
 #[test]
 fn test_parse_comment3() {
-	let sl = &[Token::Comment("".to_owned())][..];
+	let sl = &[Token::Comment(s!())][..];
 	let code = TokenStream::from(sl);
 
 	assert_eq!(
 		parse_comment(code).finish(),
-		Ok((ts![], ast::Comment("".to_owned())))
+		Ok((ts![], ast::Comment(s!())))
 	)
 }
 
 #[test]
 fn test_parse_comment4() {
-	let sl = &[Token::Comment("hello".to_owned())][..];
+	let sl = &[Token::Comment(s!("hello"))][..];
 	let code = TokenStream::from(sl);
 
 	assert_eq!(
 		parse_comment(code).finish(),
-		Ok((ts![], ast::Comment("hello".to_owned())))
+		Ok((ts![], ast::Comment(s!("hello"))))
 	)
 }
 
@@ -589,9 +589,9 @@ fn parse_comments0_must_match_with_empty_token_stream() {
 #[test]
 fn parse_comments0_must_match_with_many_consequent_comments() {
 	let sl = &[
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
-		Token::Comment("ents".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
+		Token::Comment(s!("ents")),
 		JumpLeft,
 	][..];
 	let code = TokenStream::from(sl);
@@ -601,9 +601,9 @@ fn parse_comments0_must_match_with_many_consequent_comments() {
 		Ok((
 			ts![JumpLeft],
 			vec![
-				ast::Comment("co".to_owned()),
-				ast::Comment("mm".to_owned()),
-				ast::Comment("ents".to_owned()),
+				ast::Comment(s!("co")),
+				ast::Comment(s!("mm")),
+				ast::Comment(s!("ents")),
 			]
 		))
 	)
@@ -622,9 +622,9 @@ fn parse_comments1_must_not_match_with_empty_token_stream() {
 #[test]
 fn parse_comments1_must_match_with_many_consequent_comments() {
 	let sl = &[
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
-		Token::Comment("ents".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
+		Token::Comment(s!("ents")),
 		JumpLeft,
 	][..];
 	let code = TokenStream::from(sl);
@@ -634,9 +634,9 @@ fn parse_comments1_must_match_with_many_consequent_comments() {
 		Ok((
 			ts![JumpLeft],
 			vec![
-				ast::Comment("co".to_owned()),
-				ast::Comment("mm".to_owned()),
-				ast::Comment("ents".to_owned()),
+				ast::Comment(s!("co")),
+				ast::Comment(s!("mm")),
+				ast::Comment(s!("ents")),
 			]
 		))
 	)
@@ -654,7 +654,7 @@ fn parse_paragraph_must_not_match_with_empty_token_stream() {
 
 #[test]
 fn parse_paragraph_must_not_match_with_single_comment() {
-	let sl = &[Token::Comment("co".to_owned())][..];
+	let sl = &[Token::Comment(s!("co"))][..];
 	let code = TokenStream::from(sl);
 
 	assert_eq!(
@@ -678,7 +678,7 @@ fn parse_paragraph_must_not_match_with_single_sentence() {
 
 #[test]
 fn parse_paragraph_must_match_with_comment_and_sentence() {
-	let sl = &[Token::Comment("co".to_owned()), JumpLeft][..];
+	let sl = &[Token::Comment(s!("co")), JumpLeft][..];
 	let code = TokenStream::from(sl);
 
 	assert_eq!(
@@ -686,7 +686,7 @@ fn parse_paragraph_must_match_with_comment_and_sentence() {
 		Ok((
 			ts![],
 			Paragraph(
-				vec![ast::Comment("co".to_owned())],
+				vec![ast::Comment(s!("co"))],
 				vec![sentence![word!(, [BT::JumpLeft],)]]
 			)
 		))
@@ -713,9 +713,9 @@ fn parse_code_must_match_with_empty_token_stream() {
 #[test]
 fn parse_code_must_match_with_only_comments() {
 	let sl = &[
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
-		Token::Comment("ents".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
+		Token::Comment(s!("ents")),
 	][..];
 	let code = TokenStream::from(sl);
 
@@ -727,9 +727,9 @@ fn parse_code_must_match_with_only_comments() {
 				leading_sentences: vec![],
 				paragraphs: vec![],
 				trailing_comments: vec![
-					ast::Comment("co".to_owned()),
-					ast::Comment("mm".to_owned()),
-					ast::Comment("ents".to_owned())
+					ast::Comment(s!("co")),
+					ast::Comment(s!("mm")),
+					ast::Comment(s!("ents"))
 				],
 			}
 		))
@@ -769,8 +769,8 @@ fn parse_code_must_match_with_sentences_and_comments() {
 		Debug,
 		Out,
 		JumpRight,
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
 	][..];
 	let code = TokenStream::from(sl);
 
@@ -788,8 +788,8 @@ fn parse_code_must_match_with_sentences_and_comments() {
 				],
 				paragraphs: vec![],
 				trailing_comments: vec![
-					ast::Comment("co".to_owned()),
-					ast::Comment("mm".to_owned()),
+					ast::Comment(s!("co")),
+					ast::Comment(s!("mm")),
 				],
 			}
 		))
@@ -799,8 +799,8 @@ fn parse_code_must_match_with_sentences_and_comments() {
 #[test]
 fn parse_code_must_match_with_comments_and_sentences() {
 	let sl = &[
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
 		JumpLeft,
 		In,
 		NewLine,
@@ -818,10 +818,7 @@ fn parse_code_must_match_with_comments_and_sentences() {
 			Code {
 				leading_sentences: vec![],
 				paragraphs: vec![Paragraph(
-					vec![
-						ast::Comment("co".to_owned()),
-						ast::Comment("mm".to_owned()),
-					],
+					vec![ast::Comment(s!("co")), ast::Comment(s!("mm")),],
 					vec![
 						sentence![word!(, [BT::JumpLeft, BT::In],)],
 						sentence![
@@ -839,16 +836,16 @@ fn parse_code_must_match_with_comments_and_sentences() {
 #[test]
 fn parse_code_must_match_with_c_s() {
 	let sl = &[
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
 		JumpLeft,
 		In,
 		NewLine,
 		Right,
-		Token::Comment("en".to_owned()),
+		Token::Comment(s!("en")),
 		Debug,
 		Out,
-		Token::Comment("ts".to_owned()),
+		Token::Comment(s!("ts")),
 		JumpRight,
 	][..];
 	let code = TokenStream::from(sl);
@@ -861,21 +858,18 @@ fn parse_code_must_match_with_c_s() {
 				leading_sentences: vec![],
 				paragraphs: vec![
 					Paragraph(
-						vec![
-							ast::Comment("co".to_owned()),
-							ast::Comment("mm".to_owned()),
-						],
+						vec![ast::Comment(s!("co")), ast::Comment(s!("mm")),],
 						vec![
 							sentence![word!(, [BT::JumpLeft, BT::In],)],
 							sentence![word!(,, [TT::Right]),],
 						]
 					),
 					Paragraph(
-						vec![ast::Comment("en".to_owned()),],
+						vec![ast::Comment(s!("en")),],
 						vec![sentence![word!([HT::Debug], [BT::Out],)]],
 					),
 					Paragraph(
-						vec![ast::Comment("ts".to_owned()),],
+						vec![ast::Comment(s!("ts")),],
 						vec![sentence![word!(, [BT::JumpRight],)]]
 					)
 				],
@@ -889,17 +883,17 @@ fn parse_code_must_match_with_c_s() {
 fn parse_code_must_match_with_s_c() {
 	let sl = &[
 		JumpLeft,
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
 		In,
 		NewLine,
 		Right,
-		Token::Comment("en".to_owned()),
+		Token::Comment(s!("en")),
 		Debug,
 		Out,
 		NewLine,
 		JumpRight,
-		Token::Comment("ts".to_owned()),
+		Token::Comment(s!("ts")),
 	][..];
 	let code = TokenStream::from(sl);
 
@@ -911,24 +905,21 @@ fn parse_code_must_match_with_s_c() {
 				leading_sentences: vec![sentence![word!(, [BT::JumpLeft],)]],
 				paragraphs: vec![
 					Paragraph(
-						vec![
-							ast::Comment("co".to_owned()),
-							ast::Comment("mm".to_owned()),
-						],
+						vec![ast::Comment(s!("co")), ast::Comment(s!("mm")),],
 						vec![
 							sentence![word!(, [BT::In],)],
 							sentence![word!(,, [TT::Right]),],
 						]
 					),
 					Paragraph(
-						vec![ast::Comment("en".to_owned()),],
+						vec![ast::Comment(s!("en")),],
 						vec![
 							sentence![word!([HT::Debug], [BT::Out],)],
 							sentence![word!(, [BT::JumpRight],)],
 						],
 					),
 				],
-				trailing_comments: vec![ast::Comment("ts".to_owned())],
+				trailing_comments: vec![ast::Comment(s!("ts"))],
 			}
 		))
 	)
@@ -937,19 +928,19 @@ fn parse_code_must_match_with_s_c() {
 #[test]
 fn parse_code_must_match_with_c_c() {
 	let sl = &[
-		Token::Comment("hello".to_owned()),
+		Token::Comment(s!("hello")),
 		JumpLeft,
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
 		In,
 		NewLine,
 		Right,
-		Token::Comment("en".to_owned()),
+		Token::Comment(s!("en")),
 		Debug,
 		Out,
 		NewLine,
 		JumpRight,
-		Token::Comment("ts".to_owned()),
+		Token::Comment(s!("ts")),
 	][..];
 	let code = TokenStream::from(sl);
 
@@ -961,28 +952,25 @@ fn parse_code_must_match_with_c_c() {
 				leading_sentences: vec![],
 				paragraphs: vec![
 					Paragraph(
-						vec![ast::Comment("hello".to_owned()),],
+						vec![ast::Comment(s!("hello")),],
 						vec![sentence![word!(, [BT::JumpLeft],)]]
 					),
 					Paragraph(
-						vec![
-							ast::Comment("co".to_owned()),
-							ast::Comment("mm".to_owned()),
-						],
+						vec![ast::Comment(s!("co")), ast::Comment(s!("mm")),],
 						vec![
 							sentence![word!(, [BT::In],)],
 							sentence![word!(,, [TT::Right]),],
 						]
 					),
 					Paragraph(
-						vec![ast::Comment("en".to_owned()),],
+						vec![ast::Comment(s!("en")),],
 						vec![
 							sentence![word!([HT::Debug], [BT::Out],)],
 							sentence![word!(, [BT::JumpRight],)],
 						],
 					),
 				],
-				trailing_comments: vec![ast::Comment("ts".to_owned())],
+				trailing_comments: vec![ast::Comment(s!("ts"))],
 			}
 		))
 	)
@@ -992,12 +980,12 @@ fn parse_code_must_match_with_c_c() {
 fn parse_code_must_match_with_s_s() {
 	let sl = &[
 		JumpLeft,
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
 		In,
 		NewLine,
 		Right,
-		Token::Comment("en".to_owned()),
+		Token::Comment(s!("en")),
 		Debug,
 		Out,
 		NewLine,
@@ -1013,17 +1001,14 @@ fn parse_code_must_match_with_s_s() {
 				leading_sentences: vec![sentence![word!(, [BT::JumpLeft],)]],
 				paragraphs: vec![
 					Paragraph(
-						vec![
-							ast::Comment("co".to_owned()),
-							ast::Comment("mm".to_owned()),
-						],
+						vec![ast::Comment(s!("co")), ast::Comment(s!("mm")),],
 						vec![
 							sentence![word!(, [BT::In],)],
 							sentence![word!(,, [TT::Right]),],
 						]
 					),
 					Paragraph(
-						vec![ast::Comment("en".to_owned()),],
+						vec![ast::Comment(s!("en")),],
 						vec![
 							sentence![word!([HT::Debug], [BT::Out],)],
 							sentence![word!(, [BT::JumpRight],)],
@@ -1057,17 +1042,17 @@ fn parse_root_must_match_with_empty_token_stream() {
 fn test_parse_root() {
 	let sl = &[
 		JumpLeft,
-		Token::Comment("co".to_owned()),
-		Token::Comment("mm".to_owned()),
+		Token::Comment(s!("co")),
+		Token::Comment(s!("mm")),
 		In,
 		NewLine,
 		Right,
-		Token::Comment("en".to_owned()),
+		Token::Comment(s!("en")),
 		Debug,
 		Out,
 		NewLine,
 		JumpRight,
-		Token::Comment("ts".to_owned()),
+		Token::Comment(s!("ts")),
 	][..];
 	let code = TokenStream::from(sl);
 
@@ -1079,24 +1064,21 @@ fn test_parse_root() {
 				leading_sentences: vec![sentence![word!(, [BT::JumpLeft],)]],
 				paragraphs: vec![
 					Paragraph(
-						vec![
-							ast::Comment("co".to_owned()),
-							ast::Comment("mm".to_owned()),
-						],
+						vec![ast::Comment(s!("co")), ast::Comment(s!("mm")),],
 						vec![
 							sentence![word!(, [BT::In],)],
 							sentence![word!(,, [TT::Right]),],
 						]
 					),
 					Paragraph(
-						vec![ast::Comment("en".to_owned()),],
+						vec![ast::Comment(s!("en")),],
 						vec![
 							sentence![word!([HT::Debug], [BT::Out],)],
 							sentence![word!(, [BT::JumpRight],)],
 						],
 					),
 				],
-				trailing_comments: vec![ast::Comment("ts".to_owned())],
+				trailing_comments: vec![ast::Comment(s!("ts"))],
 			})
 		))
 	)

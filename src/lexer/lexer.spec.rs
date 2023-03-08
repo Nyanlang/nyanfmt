@@ -4,6 +4,7 @@ use nom::{
 	error::{Error, ErrorKind},
 	Finish,
 };
+use str_macro::str as s;
 use Token::*;
 
 #[test]
@@ -18,7 +19,7 @@ fn parse_string() {
 		Ok((
 			"",
 			vec![
-				Comment("주석".to_owned()),
+				Comment(s!("주석")),
 				Inc,
 				Inc,
 				Left,
@@ -31,7 +32,7 @@ fn parse_string() {
 				JumpRight,
 				JumpLeft,
 				JumpLeft,
-				Comment("comme".to_owned()),
+				Comment(s!("comme")),
 				Right,
 				Dec,
 				Dec,
