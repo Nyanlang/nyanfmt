@@ -169,11 +169,11 @@ impl Display for Code {
 
 		match (l.len(), p.len(), t.len()) {
 			(1.., 1.., 1..) => {
-				l.push('\n');
-				p.push('\n');
+				l.push_str("\n\n");
+				p.push_str("\n\n");
 			},
-			(1.., 1.., _) | (1.., _, 1..) => l.push('\n'),
-			(_, 1.., 1..) => p.push('\n'),
+			(1.., 1.., _) | (1.., _, 1..) => l.push_str("\n\n"),
+			(_, 1.., 1..) => p.push_str("\n\n"),
 			_ => {},
 		}
 
