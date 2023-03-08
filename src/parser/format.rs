@@ -181,6 +181,18 @@ impl Display for Code {
 	}
 }
 
+impl Display for Root {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		let res = self.0.to_string();
+
+		write!(
+			f,
+			"{res}{}",
+			if res.len() > 0 { "\n" } else { "" }
+		)
+	}
+}
+
 #[cfg(test)]
 #[path = "format.spec.rs"]
 mod tests;
