@@ -216,3 +216,421 @@ fn format_paragraph_with_multiple_comment_and_multiple_sentence() {
 		}
 	);
 }
+
+#[test]
+fn format_code_with_empty_vectors() {
+	let ast = Code {
+		leading_sentences: vec![],
+		paragraphs: vec![],
+		trailing_comments: vec![],
+	};
+
+	assert_eq!(ast.to_string(), "");
+}
+
+#[test]
+fn format_code_with_only_leading_sentences() {
+	let ast = Code {
+		leading_sentences: vec![
+			sentence![
+				word!(
+					[HeadTok::Inc],
+					[BodyTok::JumpLeft, BodyTok::In],
+				),
+				word!([HeadTok::Dec],, [TailTok::Right]),
+			],
+			sentence![
+				word!([HeadTok::Debug],,[TailTok::Left]),
+				word!(,[BodyTok::Out], [TailTok::Right, TailTok::Left, TailTok::Left]),
+			],
+		],
+		paragraphs: vec![],
+		trailing_comments: vec![],
+	};
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            냥-, 냐?
+            뀨! .?!!"#
+		}
+	);
+}
+
+#[test]
+fn format_code_with_only_trailing_comments() {
+	let ast = Code {
+		leading_sentences: vec![],
+		paragraphs: vec![],
+		trailing_comments: vec![
+			Comment("this is".to_owned()),
+			Comment("very long and".to_owned()),
+			Comment("newline delimited".to_owned()),
+			Comment("comment!".to_owned()),
+		],
+	};
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            "this is"
+            "very long and"
+            "newline delimited"
+            "comment!""#
+		}
+	);
+}
+
+#[test]
+fn format_code_with_paragraphs() {
+	let ast = Code {
+		leading_sentences: vec![],
+		paragraphs: vec![
+			Paragraph(
+				vec![
+					Comment("this".to_owned()),
+					Comment("is".to_owned()),
+					Comment("comment".to_owned()),
+				],
+				vec![
+					sentence![
+						word!(
+							[HeadTok::Inc, HeadTok::Dec, HeadTok::Debug],
+							[
+								BodyTok::JumpLeft,
+								BodyTok::JumpRight,
+								BodyTok::Out,
+								BodyTok::In,
+							],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc, HeadTok::Debug],
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+					sentence![
+						word!(
+							,
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc],,
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+				],
+			),
+			Paragraph(
+				vec![Comment("comment2".to_owned())],
+				vec![
+					sentence![word!(
+						[HeadTok::Inc, HeadTok::Debug],
+						[BodyTok::In],
+						[TailTok::Right, TailTok::Left]
+					)],
+					sentence![word!(
+						[HeadTok::Inc],,
+						[TailTok::Right, TailTok::Left]
+					)],
+				],
+			),
+		],
+		trailing_comments: vec![],
+	};
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            "this"
+            "is"
+            "comment"
+            냥냐뀨-~.,?! 냥뀨,?!
+            ,?! 냥?!
+
+            "comment2"
+            냥뀨,?!
+            냥?!"#
+		}
+	);
+}
+
+#[test]
+fn format_code_with_paragraphs_and_leading_sentences() {
+	let ast = Code {
+		leading_sentences: vec![
+			sentence![
+				word!(
+					[HeadTok::Inc],
+					[BodyTok::JumpLeft, BodyTok::In],
+				),
+				word!([HeadTok::Dec],, [TailTok::Right]),
+			],
+			sentence![
+				word!([HeadTok::Debug],,[TailTok::Left]),
+				word!(,[BodyTok::Out], [TailTok::Right, TailTok::Left, TailTok::Left]),
+			],
+		],
+		paragraphs: vec![
+			Paragraph(
+				vec![
+					Comment("this".to_owned()),
+					Comment("is".to_owned()),
+					Comment("comment".to_owned()),
+				],
+				vec![
+					sentence![
+						word!(
+							[HeadTok::Inc, HeadTok::Dec, HeadTok::Debug],
+							[
+								BodyTok::JumpLeft,
+								BodyTok::JumpRight,
+								BodyTok::Out,
+								BodyTok::In,
+							],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc, HeadTok::Debug],
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+					sentence![
+						word!(
+							,
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc],,
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+				],
+			),
+			Paragraph(
+				vec![Comment("comment2".to_owned())],
+				vec![
+					sentence![word!(
+						[HeadTok::Inc, HeadTok::Debug],
+						[BodyTok::In],
+						[TailTok::Right, TailTok::Left]
+					)],
+					sentence![word!(
+						[HeadTok::Inc],,
+						[TailTok::Right, TailTok::Left]
+					)],
+				],
+			),
+		],
+		trailing_comments: vec![],
+	};
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            냥-, 냐?
+            뀨! .?!!
+
+            "this"
+            "is"
+            "comment"
+            냥냐뀨-~.,?! 냥뀨,?!
+            ,?! 냥?!
+
+            "comment2"
+            냥뀨,?!
+            냥?!"#
+		}
+	);
+}
+
+#[test]
+fn format_code_with_paragraphs_and_trailing_comments() {
+	let ast = Code {
+		leading_sentences: vec![],
+		paragraphs: vec![
+			Paragraph(
+				vec![
+					Comment("this".to_owned()),
+					Comment("is".to_owned()),
+					Comment("comment".to_owned()),
+				],
+				vec![
+					sentence![
+						word!(
+							[HeadTok::Inc, HeadTok::Dec, HeadTok::Debug],
+							[
+								BodyTok::JumpLeft,
+								BodyTok::JumpRight,
+								BodyTok::Out,
+								BodyTok::In,
+							],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc, HeadTok::Debug],
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+					sentence![
+						word!(
+							,
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc],,
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+				],
+			),
+			Paragraph(
+				vec![Comment("comment2".to_owned())],
+				vec![
+					sentence![word!(
+						[HeadTok::Inc, HeadTok::Debug],
+						[BodyTok::In],
+						[TailTok::Right, TailTok::Left]
+					)],
+					sentence![word!(
+						[HeadTok::Inc],,
+						[TailTok::Right, TailTok::Left]
+					)],
+				],
+			),
+		],
+		trailing_comments: vec![
+			Comment("this is".to_owned()),
+			Comment("very long and".to_owned()),
+			Comment("newline delimited".to_owned()),
+			Comment("comment!".to_owned()),
+		],
+	};
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            "this"
+            "is"
+            "comment"
+            냥냐뀨-~.,?! 냥뀨,?!
+            ,?! 냥?!
+
+            "comment2"
+            냥뀨,?!
+            냥?!
+
+            "this is"
+            "very long and"
+            "newline delimited"
+            "comment!""#
+		}
+	);
+}
+
+#[test]
+fn format_code_full() {
+	let ast = Code {
+		leading_sentences: vec![
+			sentence![
+				word!(
+					[HeadTok::Inc],
+					[BodyTok::JumpLeft, BodyTok::In],
+				),
+				word!([HeadTok::Dec],, [TailTok::Right]),
+			],
+			sentence![
+				word!([HeadTok::Debug],,[TailTok::Left]),
+				word!(,[BodyTok::Out], [TailTok::Right, TailTok::Left, TailTok::Left]),
+			],
+		],
+		paragraphs: vec![
+			Paragraph(
+				vec![
+					Comment("this".to_owned()),
+					Comment("is".to_owned()),
+					Comment("comment".to_owned()),
+				],
+				vec![
+					sentence![
+						word!(
+							[HeadTok::Inc, HeadTok::Dec, HeadTok::Debug],
+							[
+								BodyTok::JumpLeft,
+								BodyTok::JumpRight,
+								BodyTok::Out,
+								BodyTok::In,
+							],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc, HeadTok::Debug],
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+					sentence![
+						word!(
+							,
+							[BodyTok::In],
+							[TailTok::Right, TailTok::Left]
+						),
+						word!(
+							[HeadTok::Inc],,
+							[TailTok::Right, TailTok::Left]
+						)
+					],
+				],
+			),
+			Paragraph(
+				vec![Comment("comment2".to_owned())],
+				vec![
+					sentence![word!(
+						[HeadTok::Inc, HeadTok::Debug],
+						[BodyTok::In],
+						[TailTok::Right, TailTok::Left]
+					)],
+					sentence![word!(
+						[HeadTok::Inc],,
+						[TailTok::Right, TailTok::Left]
+					)],
+				],
+			),
+		],
+		trailing_comments: vec![
+			Comment("this is".to_owned()),
+			Comment("very long and".to_owned()),
+			Comment("newline delimited".to_owned()),
+			Comment("comment!".to_owned()),
+		],
+	};
+
+	assert_eq!(
+		ast.to_string(),
+		indoc! {r#"
+            냥-, 냐?
+            뀨! .?!!
+
+            "this"
+            "is"
+            "comment"
+            냥냐뀨-~.,?! 냥뀨,?!
+            ,?! 냥?!
+
+            "comment2"
+            냥뀨,?!
+            냥?!
+
+            "this is"
+            "very long and"
+            "newline delimited"
+            "comment!""#
+		}
+	);
+}
