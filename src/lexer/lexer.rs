@@ -58,7 +58,10 @@ where
 	))(input)
 }
 
-fn lex_tokenstream(input: &str) -> IResult<&str, Vec<Token>> {
+fn lex_tokenstream<'a, E>(input: &'a str) -> IResult<&'a str, Vec<Token>, E>
+where
+	E: ParseError<&'a str>,
+{
 	many0(delimited(space0, lex_token, space0))(input)
 }
 

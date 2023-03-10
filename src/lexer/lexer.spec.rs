@@ -15,7 +15,7 @@ fn parse_string() {
         "#};
 
 	assert_eq!(
-		lex_tokenstream(code).finish(),
+		lex_tokenstream::<Error<_>>(code).finish(),
 		Ok((
 			"",
 			vec![
