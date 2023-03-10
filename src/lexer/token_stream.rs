@@ -1,9 +1,14 @@
 use super::Token;
+use core::fmt;
 use nom::{
 	Compare, CompareResult, FindToken, InputIter, InputLength, InputTake,
 	Needed, UnspecializedInput,
 };
-use std::{iter::Enumerate, slice::Iter};
+use std::{
+	fmt::{Debug, Display, Formatter},
+	iter::Enumerate,
+	slice::Iter,
+};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TokenStream<'a> {
@@ -24,6 +29,12 @@ where
 		Self {
 			stream: stream.into(),
 		}
+	}
+}
+
+impl<'a> Display for TokenStream<'a> {
+	fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+		Debug::fmt(&self, f)
 	}
 }
 

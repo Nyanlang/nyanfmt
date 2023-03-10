@@ -5,6 +5,17 @@ mod parser;
 
 use std::{iter::Peekable, str::Chars, vec::IntoIter};
 
+use lexer::lex_code;
+use parser::parse_ast;
+
+pub fn parse_and_format_code(code: &str) -> Result<String, ()> {
+	Ok(parse_ast(lexer::TokenStream::from(
+		&lex_code(code).map_err(|_| ())?[..],
+	))
+	.map_err(|_| ())?
+	.to_string())
+}
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Token {
 	Right,

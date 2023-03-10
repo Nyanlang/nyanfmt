@@ -10,7 +10,7 @@ use nom::{
 	error::{Error, ParseError},
 	multi::{many0, many1},
 	sequence::{delimited, pair, terminated, tuple},
-	IResult, InputIter, InputTake, Parser,
+	Finish, IResult, InputIter, InputTake, Parser,
 };
 
 parse_token! { parse_inc: Inc => HeadTok::Inc => HeadTok }
@@ -92,7 +92,7 @@ fn parse_sentences1(input: TokenStream) -> IResult<TokenStream, Vec<Sentence>> {
 	many1(pad_newline(parse_words1))(input)
 }
 
-pub fn map_one<I, O, E, G>(f: G) -> impl FnOnce(I) -> IResult<I, O, E>
+fn map_one<I, O, E, G>(f: G) -> impl FnOnce(I) -> IResult<I, O, E>
 where
 	G: FnMut(I) -> Option<O>,
 	I: InputIter + InputTake + Clone,
@@ -141,6 +141,12 @@ fn parse_code(input: TokenStream) -> IResult<TokenStream, Code> {
 
 fn parse_root(input: TokenStream) -> IResult<TokenStream, Root> {
 	map(terminated(parse_code, eof), Root)(input)
+}
+
+pub fn parse_ast(input: TokenStream) -> Result<Root, Error<TokenStream>> {
+	let (_, o) = parse_root(input).finish()?;
+
+	Ok(o)
 }
 
 #[cfg(test)]
