@@ -32,7 +32,10 @@ where
 	)(input)
 }
 
-fn lex_newline(input: &str) -> IResult<&str, Token> {
+fn lex_newline<'a, E>(input: &'a str) -> IResult<&str, Token, E>
+where
+	E: ParseError<&'a str>,
+{
 	value(Token::NewLine, many1(line_ending))(input)
 }
 
