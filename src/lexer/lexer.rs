@@ -39,7 +39,10 @@ where
 	value(Token::NewLine, many1(line_ending))(input)
 }
 
-fn lex_token(input: &str) -> IResult<&str, Token> {
+fn lex_token<'a, E>(input: &'a str) -> IResult<&'a str, Token, E>
+where
+	E: ParseError<&'a str>,
+{
 	alt((
 		lex_right,
 		lex_left,
