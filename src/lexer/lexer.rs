@@ -3,7 +3,7 @@ use nom::{
 	bytes::complete::take_until,
 	character::complete::{char, line_ending, space0},
 	combinator::{cut, eof, map, value},
-	error::Error,
+	error::{Error, ParseError},
 	multi::{many0, many1},
 	sequence::{delimited, terminated},
 	Finish, IResult,
@@ -22,7 +22,10 @@ char_token! { lex_jump_right: '~' -> Token::JumpRight }
 char_token! { lex_jump_left: '-' -> Token::JumpLeft }
 char_token! { lex_debug: '뀨' -> Token::Debug }
 
-fn lex_comment(input: &str) -> IResult<&str, Token> {
+fn lex_comment<'a, E>(input: &'a str) -> IResult<&'a str, Token, E>
+where
+	E: ParseError<&'a str>,
+{
 	map(
 		delimited(char('"'), take_until(r#"""#), char('"')),
 		|o: &str| Token::Comment(s!(o)),
