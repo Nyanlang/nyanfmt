@@ -35,7 +35,9 @@ where
 	)(input)
 }
 
-fn parse_body<'a, E>(input: TokenStream<'a>) -> IResult<TokenStream, Body, E>
+fn parse_body<'a, E>(
+	input: TokenStream<'a>,
+) -> IResult<TokenStream<'a>, Body, E>
 where
 	E: ParseError<TokenStream<'a>>,
 {
