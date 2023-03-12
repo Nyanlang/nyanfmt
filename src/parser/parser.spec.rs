@@ -105,7 +105,7 @@ fn parse_tail_tokens() {
 	let code = ts![Right, Left, Right, Right];
 
 	assert_eq!(
-		parse_tail(code),
+		parse_tail::<VerboseError<_>>(code),
 		Ok((
 			TokenStream::new(),
 			Tail(vec![
@@ -123,7 +123,7 @@ fn parse_tail_tokens2() {
 	let code = ts![Right, Left, JumpRight, Right, Right];
 
 	assert_eq!(
-		parse_tail(code),
+		parse_tail::<VerboseError<_>>(code),
 		Ok((
 			ts![JumpRight, Right, Right],
 			Tail(vec![TT::Right, TT::Left])

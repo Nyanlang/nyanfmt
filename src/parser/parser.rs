@@ -52,7 +52,12 @@ where
 	)(input)
 }
 
-fn parse_tail(input: TokenStream) -> IResult<TokenStream, Tail> {
+fn parse_tail<'a, E>(
+	input: TokenStream<'a>,
+) -> IResult<TokenStream<'a>, Tail, E>
+where
+	E: ParseError<TokenStream<'a>>,
+{
 	map(
 		many1(alt((parse_right, parse_left))),
 		Tail,
