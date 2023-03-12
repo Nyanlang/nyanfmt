@@ -35,7 +35,10 @@ where
 	)(input)
 }
 
-fn parse_body(input: TokenStream) -> IResult<TokenStream, Body> {
+fn parse_body<'a, E>(input: TokenStream<'a>) -> IResult<TokenStream, Body, E>
+where
+	E: ParseError<TokenStream<'a>>,
+{
 	map(
 		many1(alt((
 			parse_out,

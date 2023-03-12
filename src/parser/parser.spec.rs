@@ -58,7 +58,7 @@ fn parse_body_tokens() {
 	let code = ts![Out, JumpRight, JumpRight, Dec, In, JumpLeft, Out];
 
 	assert_eq!(
-		parse_body(code),
+		parse_body::<VerboseError<_>>(code),
 		Ok((
 			ts![Dec, In, JumpLeft, Out],
 			Body(vec![
@@ -75,7 +75,7 @@ fn parse_body_tokens2() {
 	let code = ts![Out, JumpRight, JumpRight, In, JumpLeft, Out];
 
 	assert_eq!(
-		parse_body(code),
+		parse_body::<VerboseError<_>>(code),
 		Ok((
 			TokenStream::new(),
 			Body(vec![
