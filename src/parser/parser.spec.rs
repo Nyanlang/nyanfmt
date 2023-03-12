@@ -280,7 +280,7 @@ fn test_parse_words1() {
 	];
 
 	assert_eq!(
-		parse_words1(code),
+		parse_words1::<VerboseError<_>>(code),
 		Ok((
 			TokenStream::new(),
 			sentence![
