@@ -83,7 +83,12 @@ where
 	)(input)
 }
 
-fn parse_words0(input: TokenStream) -> IResult<TokenStream, Sentence> {
+fn parse_words0<'a, E>(
+	input: TokenStream<'a>,
+) -> IResult<TokenStream<'a>, Sentence, E>
+where
+	E: ParseError<TokenStream<'a>>,
+{
 	map(many0(parse_word), Sentence)(input)
 }
 

@@ -243,7 +243,7 @@ fn test_parse_words0() {
 	];
 
 	assert_eq!(
-		parse_words0(code),
+		parse_words0::<VerboseError<_>>(code),
 		Ok((
 			TokenStream::new(),
 			sentence![
@@ -267,7 +267,7 @@ fn test_parse_words0_with_empty_input() {
 	let code = TokenStream::new();
 
 	assert_eq!(
-		parse_words0(code),
+		parse_words0::<VerboseError<_>>(code),
 		Ok((TokenStream::new(), sentence![]))
 	)
 }
