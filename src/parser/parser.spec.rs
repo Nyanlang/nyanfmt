@@ -146,7 +146,7 @@ fn must_parse_word() {
 	let code = ts![Out, JumpRight, In, JumpLeft, Left, Out, Debug];
 
 	assert_eq!(
-		parse_word(code),
+		parse_word::<VerboseError<_>>(code),
 		Ok((
 			ts![Out, Debug],
 			word!(
@@ -168,7 +168,7 @@ fn must_parse_word2() {
 	let code = ts![Debug, Inc, JumpRight, In, JumpLeft, Left, Out, Debug];
 
 	assert_eq!(
-		parse_word(code),
+		parse_word::<VerboseError<_>>(code),
 		Ok((
 			ts![Out, Debug],
 			word!(
@@ -185,7 +185,7 @@ fn parse_word_only_match_head() {
 	let code = ts![Inc, Inc];
 
 	assert_eq!(
-		parse_word(code),
+		parse_word::<VerboseError<_>>(code),
 		Ok((
 			TokenStream::new(),
 			word!([HT::Inc, HT::Inc],,)
@@ -198,7 +198,7 @@ fn parse_word_only_match_body() {
 	let code = ts![Out, JumpLeft, Dec, JumpLeft];
 
 	assert_eq!(
-		parse_word(code),
+		parse_word::<VerboseError<_>>(code),
 		Ok((
 			ts![Dec, JumpLeft],
 			word!(, [BT::Out, BT::JumpLeft],),
@@ -211,7 +211,7 @@ fn parse_word_only_match_tail() {
 	let code = ts![Left, Left, Debug];
 
 	assert_eq!(
-		parse_word(code),
+		parse_word::<VerboseError<_>>(code),
 		Ok((
 			ts![Debug],
 			word!(

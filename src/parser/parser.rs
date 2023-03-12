@@ -64,7 +64,12 @@ where
 	)(input)
 }
 
-fn parse_word(input: TokenStream) -> IResult<TokenStream, Word> {
+fn parse_word<'a, E>(
+	input: TokenStream<'a>,
+) -> IResult<TokenStream<'a>, Word, E>
+where
+	E: ParseError<TokenStream<'a>>,
+{
 	map(
 		verify(
 			tuple((
