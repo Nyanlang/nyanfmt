@@ -1,7 +1,7 @@
 use super::*;
 use nom::{
 	combinator::eof,
-	error::{Error, ErrorKind},
+	error::{Error, ErrorKind, VerboseError},
 	sequence::terminated,
 	Finish,
 };
@@ -17,7 +17,7 @@ fn parse_head_tokens() {
 	let code = ts![Inc, Debug, Inc, Dec];
 
 	assert_eq!(
-		parse_head(code),
+		parse_head::<VerboseError<_>>(code),
 		Ok((
 			TokenStream::new(),
 			Head(vec![
@@ -35,7 +35,7 @@ fn parse_head_tokens2() {
 	let code = ts![Inc, Debug, Right, Inc, Dec];
 
 	assert_eq!(
-		parse_head(code),
+		parse_head::<VerboseError<_>>(code),
 		Ok((
 			ts![Right, Inc, Dec],
 			Head(vec![HT::Inc, HT::Debug])

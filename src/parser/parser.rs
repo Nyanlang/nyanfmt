@@ -23,7 +23,12 @@ parse_token! { parse_jump_left: JumpLeft => BodyTok::JumpLeft => BodyTok }
 parse_token! { parse_right: Right => TailTok::Right => TailTok }
 parse_token! { parse_left: Left => TailTok::Left => TailTok }
 
-fn parse_head(input: TokenStream) -> IResult<TokenStream, Head> {
+fn parse_head<'a, E>(
+	input: TokenStream<'a>,
+) -> IResult<TokenStream<'a>, Head, E>
+where
+	E: ParseError<TokenStream<'a>>,
+{
 	map(
 		many1(alt((parse_inc, parse_dec, parse_debug))),
 		Head,
